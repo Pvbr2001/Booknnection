@@ -14,6 +14,8 @@
     background: #fff;
     border: 1px solid black;
     border-radius: 15px;
+    padding: 0px;
+    margin-top: 10px;
 }
 
 .title-login{
@@ -40,4 +42,25 @@
     justify-content: center;
     align-items: center;
 
+}
+
+.linhadecima{
+    background-color: #FF6666;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.borda{
+    margin: 0px;
+}
+
+.btn-login{
+    border-radius: 15px;
+    background-color: #FFD68B;
+}
+
+.sub{
+    margin: 2px;
+    margin-left: 10px;
+    margin-top: 4px;
 }
