@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booknnection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+    <h1 class="titulo">Seja um ponto de apoio!</h1>
+<body>
+    <div class="container1">
+        
+            <form id="meu-formulario">
+                <!-- Seus campos de entrada aqui -->
+                <input type="text" id="nome" placeholder="Nome" required>
+                <input type="email" id="email" placeholder="E-mail" required>
+                <input type="number" id="cnpj" placeholder="Cnpj" required>
+                <input type="text" id="endereco" placeholder="Endereço" required>
+                <button type="submit">Finalizar</button>
+                </form>
+                 <div class="box-btn">
+            </div>
+        </div>
+        <script>
+            // Função para redirecionar após o envio do formulário
+            document.getElementById('meu-formulario').addEventListener('submit', function(event) {
+                event.preventDefault(); // Evita o envio padrão do formulário
+    
+                // Obtenha os valores dos campos (por exemplo, nome e e-mail)
+                const nome = document.getElementById('nome').value;
+                const email = document.getElementById('email').value;
+    
+                // Aqui você pode processar os dados (enviar para o servidor, etc.)
+    
+                // Redirecione para o painel (dashboard)
+                window.location.href = 'dashboard.html'; 
+            });
+        </script>
+</body>
+</html>
