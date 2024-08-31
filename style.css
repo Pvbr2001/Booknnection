@@ -3,22 +3,22 @@
     width: 100vw;
     height: 100vh;
     display: flex;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
-    position: relative;
+    position: fixed;
     bottom: 100px;
 
 }
 
 .form-card {
+    
     width: 300px;
     height: 300px;
     background: #fff;
     border: 1px solid black;
     border-radius: 15px;
     padding: 0px;
-    margin-top: 10px;
+
 }
 
 .title-login{
@@ -46,13 +46,6 @@
     align-items:center;
 
 }
-
-.linhadecima{
-    background-color: #FF6666;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 .fundo{
     margin: 0px;
     background-color: #FFD68B;
@@ -69,11 +62,21 @@
     margin-top: 4px;
 }
 .text{
-    align-items: center;
-    display:flex;
+    bottom: 270px;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
     justify-content: center;
-    margin-top: auto;
-    position: relative;
-    top:100px;
-    left: 10px;
+    align-items: center;
+    position: fixed;
+
+}
+.top-bar {
+    width: 100%;
+    height: 50px;
+    background-color: rgb(0, 42, 255);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
