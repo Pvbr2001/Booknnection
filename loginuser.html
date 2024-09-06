@@ -25,12 +25,26 @@
             </div>
             <div class="box-btn">
                 <button class="btn-login">Entrar</button>
-                <a href="cadastrouser.html" class="">Cadastrar</a>
+            </div>
+            <div>
+                <a href="cadastrouser.html" class="cad">Cadastrar</a>
             </div>
         </form>
     </div>
 </body>
-<script>
+<!---efeito scrolll--->
+<script src="https://unpkg.com/scrollreveal"></script>
 
+<script>
+  const sr = ScrollReveal ({
+    distance: '65px',
+    duration: 2600,
+    delay: 450,
+    reset: true
+  });
+
+  
+  sr.reveal('.container, .text',{delay:100, origin:'top'})
+  
 </script>
 </html>

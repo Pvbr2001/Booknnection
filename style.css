@@ -11,7 +11,7 @@
 }
 
 .form-card {
-    
+    bottom: 400px;
     width: 300px;
     height: 300px;
     background: #fff;
@@ -48,18 +48,23 @@
 }
 .fundo{
     margin: 0px;
-    background-color: #FFD68B;
 }
 
 .btn-login{
-    border-radius: 15px;
+    border-radius: 30px;
     background-color: #FFD68B;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
 }
 
 .sub{
+    top: 100px;
     margin: 2px;
     margin-left: 10px;
-    margin-top: 4px;
+    margin-top: 10px;
+    bottom: 100px;
 }
 .text{
     bottom: 270px;
@@ -80,3 +85,15 @@
     left: 0;
     z-index: 1000;
 }
+
+.input-field{
+    border-radius: 15px;
+    border-color: 1px black;
+}
+
+.cad{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
