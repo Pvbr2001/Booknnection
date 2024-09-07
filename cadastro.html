@@ -1,26 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booknnection - Login</title>
-    <link rel="stylesheet" href="style_index.css">
+    <title>Booknnection - Cadastro</title>
+    <link rel="stylesheet" href="style_cadastro.css">
 </head>
 <body>
     <header>
         <!-- Header sem funcionalidade até o momento -->
     </header>
-    <div class="login-container">
+    <div class="cadastro-container">
         <h1>Booknnection</h1>
-        <button class="google-btn">Entrar com google</button>
-        <form>
-            <input type="text" placeholder="Nome">
-            <input type="email" placeholder="E-mail">
-            <input type="password" placeholder="Senha">
-            <input type="password" placeholder="Confirme a senha">
-            <button type="submit">Login</button>
+        <button class="google-btn">Entrar com Google</button>
+        <form method="POST" action="index.php">
+            <input type="hidden" name="acao" value="cadastro">
+            <input type="text" name="nome" placeholder="Nome" required>
+            <input type="email" name="email" placeholder="E-mail" required>
+            <input type="password" name="senha" placeholder="Senha" required>
+            <input type="password" name="confirmar_senha" placeholder="Confirme a Senha" required>
+            <input type="text" name="cpf_cnpf" placeholder="CPF/CNPJ" required>
+            <input type="text" name="endereco" placeholder="Endereço" required>
+            <select name="account_type" required>
+                <option value="fisica">Pessoa Física</option>
+                <option value="juridica">Pessoa Jurídica</option>
+            </select>
+            <button type="submit">Cadastrar</button>
         </form>
-        <p>Já tem uma conta? <a href="#">Conecte-se</a></p>
+        <p>Já tem uma conta? <a href="login.html">Conecte-se</a></p>
     </div>
 </body>
 </html>
