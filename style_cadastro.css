@@ -7,7 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    overflow: hidden; /* Prevent scrollbars */
+    overflow: hidden; 
 }
 
 header {
@@ -36,8 +36,8 @@ header {
     width: 350px;
     height: 70%;
     opacity: 0;
-    transform: translateY(-100px); /* Start position */
-    animation: slideDown 1.5s forwards; /* Animation */
+    transform: translateY(-100px); /* posiçao inicial */
+    animation: slideDown 1.5s forwards; /* animaçao */
     z-index: 1;
     display: flex;
     flex-direction: column;
@@ -45,13 +45,14 @@ header {
     align-items: center;
 }
 
+/* funçao para animaçao do container*/
 @keyframes slideDown {
     from {
-        transform: translateY(-100px);
+        transform: translateY(-100px);/* posiçao inicial */
         opacity: 0;
     }
     to {
-        transform: translateY(0);
+        transform: translateY(0);/* posiçao final */
         opacity: 1;
     }
 }
@@ -112,17 +113,17 @@ p a:hover {
     text-decoration: underline;
 }
 
-/* Keyframes for image sliding in from left */
+/* funçao para animaçao da imagem */
 @keyframes slideInFromLeft {
     from {
-        left: -50%; /* Start off-screen to the left */
+        left: -50%; /* posiçao inicial */
     }
     to {
-        left: 0; /* End at the final position */
+        left: 0; /* posiçao final */
     }
 }
 
-/* Background image settings with animation */
+/* estilizaçao da imagem de fundo*/
 body::before {
     content: "";
     background-image: url('HOO.png');
@@ -130,12 +131,12 @@ body::before {
     background-repeat: no-repeat;
     background-position: left center;
     position: absolute;
-    top: 150px; /* Adjust as needed */
-    left: -50%; /* Start off-screen to the left */
+    top: 150px; 
+    left: -50%;
     bottom: 0;
     width: 50%;
-    height: calc(100% - 150px); /* Subtract header height */
+    height: calc(100% - 150px); /* ajuste para nao bater no header */
     z-index: 0;
-    opacity: 0.9; /* Adjust as needed */
-    animation: slideInFromLeft 2s forwards; /* Animation for sliding in */
+    opacity: 0.9;
+    animation: slideInFromLeft 2s forwards; /* animaçao */
 }
