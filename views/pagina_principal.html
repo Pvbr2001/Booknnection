@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booknnection - Página Principal</title>
+    <link rel="stylesheet" href="../public/estilos_css/style_pagina_principal.css">
+</head>
+<body>
+
+    <!-- Add the class to header and footer -->
+    <header class="is-transitioned">
+        <div class="header-content">
+            <h1>Booknnection</h1>
+            <form class="search-form">
+                <input type="text" placeholder="Pesquisar...">
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="main-container main-content is-transitioned">
+        <aside class="sidebar-left">
+            <div class="sidebar-section">
+                <h2>Tópicos Populares</h2>
+                <ul>
+                    <li><a href="#">Tópico 1</a></li>
+                    <li><a href="#">Tópico 2</a></li>
+                    <li><a href="#">Tópico 3</a></li>
+                </ul>
+            </div>
+            <button class="sidebar-button">Botão Lateral 1</button>
+            <button class="sidebar-button">Botão Lateral 2</button>
+        </aside>
+
+        <main class="feed">
+            <div class="post">
+                <h2>Postagem 1</h2>
+                <p>Conteúdo da postagem 1...</p>
+            </div>
+            <div class="post">
+                <h2>Postagem 2</h2>
+                <p>Conteúdo da postagem 2...</p>
+            </div>
+        </main>
+
+        <aside class="sidebar-right">
+            <div class="sidebar-section">
+                <h2>Tópicos Recentes</h2>
+                <ul>
+                    <li><a href="#">Tópico A</a></li>
+                    <li><a href="#">Tópico B</a></li>
+                    <li><a href="#">Tópico C</a></li>
+                </ul>
+            </div>
+            <button class="sidebar-button">Botão Lateral A</button>
+            <button class="sidebar-button">Botão Lateral B</button>
+        </aside>
+    </div>
+
+    <!-- Add the class to footer -->
+    <footer class="is-transitioned">
+        <p>&copy; 2024 Booknnection</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove the transition class for the main content after animation ends
+            setTimeout(function() {
+                document.querySelector('.main-content').classList.remove('is-transitioned');
+                document.querySelector('header').classList.remove('is-transitioned');
+                document.querySelector('footer').classList.remove('is-transitioned');
+            }, 2000); // Same duration as the animation (2s)
+        });
+    </script>
+</body>
+</html>

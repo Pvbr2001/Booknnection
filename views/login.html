@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/estilos_css/style_login.css">
+    <title>Booknnection - Login</title>
+</head>
+<body>
+    <header>
+        <!-- Header sem funcionalidade até o momento -->
+    </header>
+    <div class="container-wrapper">
+        <div class="login-container fade-transition">
+            <h1>Booknnection</h1>
+            <button class="google-btn">Entrar com Google</button>
+            <form id="login-form" method="POST" action="../controllers/User_Controller.php">
+                <input type="hidden" name="acao" value="login">
+                <input type="email" name="email" placeholder="E-mail" required>
+                <input type="password" name="senha" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+            </form>
+            <p>Não tem uma conta? <a href="../views/cadastro.html">Cadastrar</a></p>
+        </div>
+    </div>
+</body>
+</html>

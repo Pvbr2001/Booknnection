@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booknnection - Cadastro</title>
+    <link rel="stylesheet" href="../public/estilos_css/style_cadastro.css">
+</head>
+<body>
+    <header>
+        <!-- Header sem funcionalidade até o momento -->
+    </header>
+    <!-- Div para cadastro de usuario, tendo açao para a central de gerenciamento de informaçoes-->
+    <div class="cadastro-container">
+        <h1>Booknnection</h1>
+        <button class="google-btn">Entrar com Google</button>
+        <form id="cadastro-form" method="POST">
+            <input type="hidden" name="acao" value="cadastro">
+            <input type="text" name="nome" placeholder="Nome" required>
+            <input type="email" name="email" placeholder="E-mail" required>
+            <input type="password" name="senha" placeholder="Senha" required>
+            <input type="password" name="confirmar_senha" placeholder="Confirme a Senha" required>
+            <input type="text" name="cpf_cnpf" placeholder="CPF/CNPJ" required>
+            <input type="text" name="endereco" placeholder="Endereço" required>
+            <select name="account_type" required>
+                <option value="fisica">Pessoa Física</option>
+                <option value="juridica">Pessoa Jurídica</option>
+            </select>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <!-- opção para caso o usuário já tenha um login ser redirecionado -->
+        <p>Já tem uma conta? <a href="login.html">Conecte-se</a></p>
+    </div>
+
+    <script>
+        document.getElementById('cadastro-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            var formData = new FormData(this);
+            fetch('../controllers/User_Controller.php', {
+                method: 'POST', 
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                console.log('Server response:', result); // Adicione esta linha para depuração
+                if (result === 'UserExists') {
+                    alert('Email já em utilização!');
+                } else if (result === 'Success') {
+                    window.location.href = '../views/pagina_principal.html';
+                } else if (result === 'PasswordsDoNotMatch') {
+                    alert('As senhas não coincidem!');
+                } else if (result === 'LoginFailed') {
+                    alert('Falha no login!');
+                } else {
+                    alert('Erro ao realizar o cadastro!');
+                }
+            })
+            .catch(error => {
+                alert('Erro ao enviar a requisição!');
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
