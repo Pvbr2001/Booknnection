@@ -2,17 +2,16 @@ Vamos fazer logo esse projeto da certo.
 
 Script do banco mysql:
 
-Create database tcc;
+CREATE DATABASE meu_banco_de_dados;
+USE meu_banco_de_dados; 
 
-use tcc;
-tabela para armazenar os cadastros de usuário:
-create table cadastrouser(
-    id int autoinchrement;
-    nome varchar(100) not null;
-
-); 
-tabela para armazenar os cadastros de logistas:
-
-
-tabela para armazenar os cadastros de Livros:
-
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    account_type ENUM('fisica, juridica') NOT NULL,
+    cpf_cnpf VARCHAR(14) not null UNIQUE,
+    endereco VARCHAR(100) not null,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
