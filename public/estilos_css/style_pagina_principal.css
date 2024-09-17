@@ -7,10 +7,23 @@ body {
     overflow-x: hidden; /* Evita rolagem horizontal */
 }
 
+html, body {
+    overflow-x: hidden;
+    overflow-y: hidden; /* Evita scroll horizontal */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .main-content.is-transitioned {
     animation: fade-in 1.5s forwards;
     opacity: 0;
-    transform: translateY(50vh);  
+    transform: translateY(50vh);
+    width: 100%; /* Garante que o conteúdo não exceda a largura da viewport */
+    box-sizing: border-box; /* Inclui padding e border na largura total */
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 @keyframes fade-in {
@@ -22,6 +35,42 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.profile-icon {
+    display: flex;
+    align-items: center;
+    margin-left: -40%; /* Ajusta a distância do ícone em relação à barra de pesquisa */
+}
+
+.profile-icon a {
+    display: flex;
+    align-items: center;
+}
+
+.profile-icon img {
+    width: 40px; /* Ajuste o tamanho conforme necessário */
+    height: 40px;
+    border-radius: 50%; /* Faz com que a imagem fique circular */
+    cursor: pointer;
+}
+
+.profile-icon img:hover {
+    opacity: 0.8; /* Efeito de hover opcional */
+}
+
+
+.title-link {
+    text-decoration: none; /* Remove o sublinhado */
+    color: white;          /* Cor do texto */
+    display: block;        /* Ocupa todo o espaço disponível de h1 */
+    font-size: inherit;    /* Herda o tamanho da fonte de h1 */
+    font-weight: inherit;  /* Herda a espessura da fonte de h1 */
+}
+
+/* Adicionando hover para indicar interatividade */
+.title-link:hover {
+    cursor: pointer;            /* Muda o cursor para indicar clicabilidade */
 }
 
 header.is-transitioned,
@@ -97,6 +146,8 @@ header {
     padding: 20px;
     max-width: 1200px;
     margin-top: 80px; /* Espaço suficiente para o header fixo */
+    overflow-y: hidden; /* Evita scroll horizontal */
+    box-sizing: border-box;
 }
 
 .sidebar-left, .sidebar-right {
@@ -141,18 +192,19 @@ header {
 
 .sidebar-button {
     display: block;
-    background-color: #FFCC80;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: #ff6f00;
+    color: white;
     border: none;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
+    text-align: center;
 }
 
 .sidebar-button:hover {
-    background-color: #FFAB40;
+    background-color: #e65c00;
 }
+
 
 .feed {
     flex: 2;

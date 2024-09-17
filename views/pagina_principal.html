@@ -5,20 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booknnection - Página Principal</title>
     <link rel="stylesheet" href="../public/estilos_css/style_pagina_principal.css">
+    <link rel="stylesheet" href="../public/estilos_css/popup.css">   <!-- Estilo específico do pop-up -->
 </head>
 <body>
 
-    <!-- Add the class to header and footer -->
     <header class="is-transitioned">
         <div class="header-content">
-            <h1>Booknnection</h1>
+            <h1>
+                <a href="../views/pagina_principal.html" class="title-link">Booknnection</a>
+            </h1>
             <form class="search-form">
                 <input type="text" placeholder="Pesquisar...">
                 <button type="submit">Buscar</button>
             </form>
+            <div class="profile-icon">
+                <a href="../views/pagina_perfil.html">
+                    <img src="../public/imagens/Corgi.png" alt="Ícone de Perfil">
+                </a>
+            </div>
         </div>
     </header>
-
+ 
     <div class="main-container main-content is-transitioned">
         <aside class="sidebar-left">
             <div class="sidebar-section">
@@ -29,6 +36,7 @@
                     <li><a href="#">Tópico 3</a></li>
                 </ul>
             </div>
+            <button id="add-book-btn" class="sidebar-button">Adicionar Livro!</button>
             <button class="sidebar-button">Botão Lateral 1</button>
             <button class="sidebar-button">Botão Lateral 2</button>
         </aside>
@@ -63,6 +71,20 @@
         <p>&copy; 2024 Booknnection</p>
     </footer>
 
+    <!-- Pop-up -->
+    <div id="popup" class="popup-container">
+        <div class="popup-content">
+            <span id="close-popup" class="popup-close">&times;</span>
+            <div class="popup-image-container">
+                <img src="../public/imagens/book-cover.jpg" alt="Book Cover" class="popup-image">
+            </div>
+            <h2>Descrição:</h2>
+            <input type="text" placeholder="Adicione a descrição aqui...">
+            <button>Salvar</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Remove the transition class for the main content after animation ends
@@ -70,8 +92,36 @@
                 document.querySelector('.main-content').classList.remove('is-transitioned');
                 document.querySelector('header').classList.remove('is-transitioned');
                 document.querySelector('footer').classList.remove('is-transitioned');
-            }, 2000); // Same duration as the animation (2s)
+            }, 5000); // Same duration as the animation (2s)
         });
+
+        // Abrir e fechar o pop-up
+        const popup = document.getElementById("popup");
+        const addBookBtn = document.getElementById("add-book-btn");
+        const closePopup = document.getElementById("close-popup");
+        const mainContent = document.querySelector('.main-container');
+
+        // Função para abrir o pop-up com animação
+        addBookBtn.onclick = function() {
+            popup.classList.add("open-popup");
+            mainContent.classList.add("darken");
+        }
+
+        // Fechar o pop-up ao clicar no botão de fechar ou fora dele
+        closePopup.onclick = function() {
+            closePopupFunction();
+        }
+
+        window.onclick = function(event) {
+            if (event.target == popup) {
+                closePopupFunction();
+            }
+        }
+
+        function closePopupFunction() {
+            popup.classList.remove("open-popup");
+            mainContent.classList.remove("darken");
+        }
     </script>
 </body>
 </html>
