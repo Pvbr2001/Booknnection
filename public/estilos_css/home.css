@@ -1,0 +1,91 @@
+/* Estilo geral */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header.navbar {
+    background-color: #2c3e50; /* Cor escura da navbar */
+    padding: 1em 0;
+    text-align: center;
+}
+
+.title-link {
+    text-decoration: none;
+    color: #ecf0f1; /* Cor clara para contraste na navbar */
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.nav-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    display: inline;
+    margin: 0 1em;
+}
+
+.nav-list li a {
+    text-decoration: none;
+    color: #ecf0f1;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+.nav-list li a:hover {
+    color: #f39c12; /* Cor hover para os links */
+}
+
+/* Estilo do conteúdo principal */
+.main-container {
+    text-align: center;
+    padding: 5em 2em;
+    background-color: #ecf0f1;
+}
+
+.hero h2 {
+    font-size: 2.5em;
+    color: #34495e; /* Cor escura para o título */
+    margin-bottom: 0.5em;
+}
+
+.hero p {
+    font-size: 1.2em;
+    color: #7f8c8d; /* Texto descritivo em cinza */
+}
+
+.button-group {
+    margin-top: 2em;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.8em 1.5em;
+    margin: 0 1em;
+    background-color: #3498db; /* Azul principal para botões */
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1em;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #2980b9; /* Cor hover dos botões */
+}
+
+/* Footer */
+.footer {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 1em 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
