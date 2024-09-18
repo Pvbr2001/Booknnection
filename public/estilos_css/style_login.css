@@ -44,22 +44,22 @@ header {
     justify-content: flex-start;
     align-items: center;
     transition: opacity 0.5s ease, transform 0.5s ease;
-    position: absolute; /* Para sobreposição correta */
-    top: 50%; /* Centraliza verticalmente */
-    transform: translateY(-50%); /* Centraliza verticalmente */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Formulário de login visível por padrão */
 .login-container {
     opacity: 1;
-    z-index: 2; /* Definir a ordem correta */
+    z-index: 2;
 }
 
 /* Formulário de cadastro oculto inicialmente */
 .cadastro-container {
     opacity: 0;
     z-index: 1;
-    pointer-events: none; /* Impede interação com o formulário oculto */
+    pointer-events: none;
 }
 
 /* Tornar o formulário de cadastro visível quando ativo */
@@ -88,7 +88,7 @@ header {
     cursor: pointer;
 }
 
-/* Estilos para os campos de entrada */
+/* Estilos para os campos de entrada e select */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -98,6 +98,8 @@ select {
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 100%;
+    box-sizing: border-box; /* Garantir que padding seja considerado no cálculo de largura */
+    font-size: 16px;
 }
 
 /* Estilos para o botão de envio */
@@ -168,7 +170,8 @@ body::before {
 
     input[type="text"],
     input[type="email"],
-    input[type="password"] {
+    input[type="password"],
+    select {
         padding: 8px;
     }
 
