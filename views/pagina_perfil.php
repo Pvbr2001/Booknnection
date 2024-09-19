@@ -1,3 +1,16 @@
+<?php
+session_start();
+require_once '../models/user.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../controllers/user_controller.php?acao=check_auth");
+    exit();
+}
+
+$user = new User();
+$user->loadById($_SESSION['user_id']);
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -19,7 +32,7 @@
                 <button type="submit">Buscar</button>
             </form>
             <div class="profile-icon">
-                <a href="../views/pagina_perfil.html">
+                <a href="../views/pagina_perfil.php">
                     <img src="../public/imagens/Corgi.png" alt="Ícone de Perfil">
                 </a>
             </div>
@@ -54,13 +67,13 @@
                         <img src="../public/imagens/Corgi.png" alt="Avatar do Usuário">
                     </div>
                     <div class="profile-details">
-                        <h2>Nome do Usuário</h2>
-                        <p>@nomeusuario</p>
+                        <h2><?php echo $user->getUsername(); ?></h2>
+                        <p>@<?php echo $user->getUsername(); ?></p>
                         <button class="follow-button">Seguir</button>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Seção de postagens -->
             <div class="feed">
                 <div class="post">

@@ -16,7 +16,7 @@
         <div class="form-container login-container">
             <h1>Booknnection</h1>
             <button class="google-btn">Entrar com Google</button>
-            <form id="login-form" method="POST" action="../controllers/User_Controller.php">
+            <form id="login-form" method="POST" action="../controllers/user_controller.php">
                 <input type="hidden" name="acao" value="login">
                 <input type="email" name="email" placeholder="E-mail" required>
                 <input type="password" name="senha" placeholder="Senha" required>
@@ -29,7 +29,7 @@
         <div class="form-container cadastro-container hidden">
             <h1>Booknnection</h1>
             <button class="google-btn">Entrar com Google</button>
-            <form id="cadastro-form" method="POST" action="../controllers/User_Controller.php">
+            <form id="cadastro-form" method="POST" action="../controllers/user_controller.php">
                 <input type="hidden" name="acao" value="cadastro">
                 <input type="text" name="nome" placeholder="Nome" required>
                 <input type="email" name="email" placeholder="E-mail" required>
@@ -51,50 +51,50 @@
         // Função para Mostrar Cadastro
         document.getElementById('showCadastro').addEventListener('click', function(e) {
             e.preventDefault(); // Impede o comportamento padrão do link
-            
+
             const loginContainer = document.querySelector('.login-container');
             const cadastroContainer = document.querySelector('.cadastro-container');
-    
+
             // Esconde o login e mostra o cadastro
             loginContainer.classList.add('hidden');
             cadastroContainer.classList.remove('hidden');
             cadastroContainer.classList.add('active');
-    
+
             // Garante que o z-index seja corretamente manipulado
             loginContainer.style.zIndex = 1;
             cadastroContainer.style.zIndex = 2;
         });
-    
+
         // Função para Mostrar Login
         document.getElementById('showLogin').addEventListener('click', function(e) {
             e.preventDefault(); // Impede o comportamento padrão do link
-    
+
             const loginContainer = document.querySelector('.login-container');
             const cadastroContainer = document.querySelector('.cadastro-container');
-    
+
             // Esconde o cadastro e mostra o login
             cadastroContainer.classList.add('hidden');
             loginContainer.classList.remove('hidden');
             cadastroContainer.classList.remove('active');
-    
+
             // Garante que o z-index seja corretamente manipulado
             loginContainer.style.zIndex = 2;
             cadastroContainer.style.zIndex = 1;
         });
 
         if (window.location.hash === '#showCadastro') {
-        const loginContainer = document.querySelector('.login-container');
-        const cadastroContainer = document.querySelector('.cadastro-container');
+            const loginContainer = document.querySelector('.login-container');
+            const cadastroContainer = document.querySelector('.cadastro-container');
 
-        // Esconde o login e mostra o cadastro
-        loginContainer.classList.add('hidden');
-        cadastroContainer.classList.remove('hidden');
-        cadastroContainer.classList.add('active');
+            // Esconde o login e mostra o cadastro
+            loginContainer.classList.add('hidden');
+            cadastroContainer.classList.remove('hidden');
+            cadastroContainer.classList.add('active');
 
-        // Garante que o z-index seja corretamente manipulado
-        loginContainer.style.zIndex = 1;
-        cadastroContainer.style.zIndex = 2;
-    }
+            // Garante que o z-index seja corretamente manipulado
+            loginContainer.style.zIndex = 1;
+            cadastroContainer.style.zIndex = 2;
+        }
     </script>
 </body>
 </html>
