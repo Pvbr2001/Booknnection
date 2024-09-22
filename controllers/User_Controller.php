@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user->login($email, $senha)) {
             $_SESSION['user_id'] = $user->getId();
             $_SESSION['username'] = $user->getUsername();
-            header('Location: ../views/pagina_principal.html');
+            header('Location: ../views/pagina_principal.php');
         } else {
             echo 'LoginFailed';
         }

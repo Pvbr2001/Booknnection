@@ -4,9 +4,10 @@
     margin: 0 auto;
     padding: 20px;
     max-width: 1200px;
-    margin-top: 80px; 
+    margin-top: 80px;
     box-sizing: border-box;
     overflow: hidden; /* Remove rolagem */
+    height: calc(100vh - 80px); 
 }
 
 .post {
@@ -14,7 +15,8 @@
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Garante que o post ocupe toda a largura disponível */
+    box-sizing: border-box; /* Inclui padding e border na largura total */
 }
 
 .post h2 {
@@ -26,14 +28,18 @@
     flex: 2;
     margin: 0 20px;
     overflow: hidden; /* Impede rolagem */
+    min-height: 600px; /* Altura mínima para garantir a barra de rolagem */
+    padding-bottom: 20px;
 }
 
-.profile-header {
+.profile-header, .feed {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     overflow: hidden;
+    width: 100%; /* Garante que ambos os elementos ocupem toda a largura disponível */
+    box-sizing: border-box; /* Inclui padding e border na largura total */
 }
 
 .profile-banner {
@@ -85,21 +91,20 @@
 }
 
 .follow-button:hover {
-    background-color: #2980b9;  
+    background-color: #2980b9;
 }
 
 /* Feed de postagens */
 .feed {
     margin-top: 20px;
     overflow: hidden; /* Impede rolagem */
+    min-height: 400px; /* Altura mínima para garantir a barra de rolagem */
 }
 
-.post {
-    background-color: white;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.feed-principal {
+    flex: 2;
+    margin: 0 20px;
+    overflow: hidden; /* Impede rolagem */
 }
 
 .post img {
@@ -107,35 +112,3 @@
     height: auto;    /* Mantém a proporção da imagem */
     display: block;  /* Remove espaço em branco abaixo da imagem */
 }
-
-.profile-content.is-transitioned,
-.feed.is-transitioned {
-    animation: fade-in 1.5s forwards;
-    opacity: 0;
-    transform: translateY(50vh);
-    width: 100%; /* Garante que o conteúdo não exceda a largura da viewport */
-    box-sizing: border-box; /* Inclui padding e border na largura total */
-    overflow: hidden;
-}
-
-.feed {
-    flex: 2;
-    margin: 0 10px;
-    overflow: hidden; /* Certifique-se de que não apareçam barras de rolagem */
-}
-
-.feed.is-transitioned {
-    animation: fade-in 1.5s forwards; /* Animação da feed */
-}
-
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(50vh);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-

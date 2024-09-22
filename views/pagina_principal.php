@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user = new User();
 $user->loadById($_SESSION['user_id']);
+$livros = $user->exibirTodosLivros();
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +17,7 @@ $user->loadById($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booknnection - Perfil de Usuário</title>
+    <title>Booknnection - Página Principal</title>
     <link rel="stylesheet" href="../public/estilos_css/header.css">
     <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
@@ -57,28 +58,11 @@ $user->loadById($_SESSION['user_id']);
             <button class="sidebar-button">Botão Lateral 2</button>
         </aside>
 
-        <!-- Seção de perfil do usuário -->
+        <!-- Seção principal -->
         <main class="profile-content">
-            <div class="profile-header">
-                <div class="profile-banner">
-                    <img src="../public/imagens/paisagem.jpg" alt="Banner do Usuário">
-                </div>
-                <div class="profile-info">
-                    <div class="profile-avatar">
-                        <img src="../public/imagens/Corgi.png" alt="Avatar do Usuário">
-                    </div>
-                    <div class="profile-details">
-                        <h2><?php echo $user->getUsername(); ?></h2>
-                        <p>@<?php echo $user->getUsername(); ?></p>
-                        <button class="follow-button">Seguir</button>
-                    </div>
-                </div>
-            </div>
-
             <!-- Seção de postagens -->
             <div class="feed">
                 <?php
-                $livros = $user->exibirLivrosFeed($_SESSION['user_id']);
                 foreach ($livros as $livro) {
                     echo "<div class='post'>";
                     echo "<h2>" . htmlspecialchars($livro['titulo']) . "</h2>";
@@ -170,9 +154,7 @@ $user->loadById($_SESSION['user_id']);
 
             // Aplicar a transição de baixo para cima ao feed e ao profile-header
             const feed = document.querySelector('.feed');
-            const profileHeader = document.querySelector('.profile-header');
             slideUp(feed, 1.5);
-            slideUp(profileHeader, 1.5);
 
             // Abrir e fechar o pop-up
             const popup = document.getElementById("popup");
@@ -205,10 +187,9 @@ $user->loadById($_SESSION['user_id']);
     </script>
 </body>
 </html>
-
 <script type="module">
     import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
-  
+
     Typebot.initBubble({
       typebot: "suporte-ao-cliente-squxxd3",
       apiHost: "http://34.132.245.158:8080",

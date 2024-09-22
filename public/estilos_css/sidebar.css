@@ -3,23 +3,29 @@
 .sidebar-left, .sidebar-right {
     flex: 1;
     margin: 0 10px;
+    left: 0;
+    height: auto; /* Altura fixa baseada na altura da viewport */
 }
 
 .sidebar-left {
     background-color: #d9dedf;
     padding: 20px;
     border-radius: 8px;
-  
 }
 
 .sidebar-right {
     background-color: #d9dedf;
     padding: 20px;
     border-radius: 8px;
-  
+    right: 0;
+}
+
+.sidebar-section {
+    margin-bottom: 20px;
 }
 
 .sidebar-button {
+    padding: 10px;
     display: block;
     margin-bottom: 15px;
     padding: 10px 15px;
@@ -46,10 +52,4 @@
     padding: 20px;
     overflow-y: auto;
     max-height: calc(100vh - 160px); /* Ajuste conforme a altura do header e footer */
-}
-
-/* Adicionando transição de fade-in para as sidebars */
-.sidebar-left.is-transitioned, .sidebar-right.is-transitioned {
-    animation: fade-in-only 2s forwards;
-    opacity: 0;
 }

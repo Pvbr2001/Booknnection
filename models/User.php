@@ -184,7 +184,18 @@ class User {
         return $livros;
     }
 
-}
+    // Adicionar esta função na classe User
+    public function exibirTodosLivros() {
+        $sql = "SELECT titulo, autor, caminho_capa FROM livros";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    
+        $livros = [];
+        while ($row = $result->fetch_assoc()) {
+            $livros[] = $row;
+        }
+        return $livros;
+    }
+}  
 ?>
