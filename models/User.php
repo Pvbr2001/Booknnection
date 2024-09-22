@@ -11,6 +11,13 @@ $dotenv->load();
 class User {
     private $conn;
     private $chave;
+    private $id;
+    private $username;
+    private $email;
+    private $nome;
+    private $cpf_cnpf;
+    private $endereco;
+    private $account_type;
 
     public function __construct() {
         $database = new Database();
@@ -26,11 +33,11 @@ class User {
 
         $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
         $cpfCnpjCriptografado = openssl_encrypt($cpf_cnpf, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-        
+
         $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('ssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco);
-        
+
         if ($stmt->execute()) {
             return 'Success'; // Cadastro bem-sucedido
         } else {
@@ -49,9 +56,9 @@ class User {
         return $stmt->num_rows > 0;
     }
 
-    // Função para login desencriptografando a senha 
+    // Função para login desencriptografando a senha
     public function login($email, $senha) {
-        $sql = "SELECT senha FROM usuario WHERE email = ?";
+        $sql = "SELECT id, senha, nome, email, account_type, cpf_cnpf, endereco FROM usuario WHERE email = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('s', $email);
         $stmt->execute();
@@ -61,12 +68,123 @@ class User {
             return false;
         }
 
-        $stmt->bind_result($senhaCriptografada);
+        $stmt->bind_result($id, $senhaCriptografada, $nome, $email, $account_type, $cpf_cnpf, $endereco);
         $stmt->fetch();
 
         $senhaDescriptografada = openssl_decrypt($senhaCriptografada, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-        
-        return $senha === $senhaDescriptografada;
+
+        if ($senha === $senhaDescriptografada) {
+            $this->id = $id;
+            $this->username = $nome;
+            $this->email = $email;
+            $this->nome = $nome;
+            $this->cpf_cnpf = $cpf_cnpf;
+            $this->endereco = $endereco;
+            $this->account_type = $account_type;
+            return true;
+        }
+
+        return false;
     }
+
+    // Função para carregar as informações do usuário pelo ID
+    public function loadById($id) {
+        $sql = "SELECT id, nome, email, account_type, cpf_cnpf, endereco FROM usuario WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($id, $nome, $email, $account_type, $cpf_cnpf, $endereco);
+            $stmt->fetch();
+
+            $this->id = $id;
+            $this->username = $nome;
+            $this->email = $email;
+            $this->nome = $nome;
+            $this->cpf_cnpf = $cpf_cnpf;
+            $this->endereco = $endereco;
+            $this->account_type = $account_type;
+        }
+    }
+
+    // Métodos para obter as informações do usuário
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getUsername() {
+        return $this->username;
+    }
+
+    public function getEmail() {
+        return $this->email;
+    }
+
+    public function getNome() {
+        return $this->nome;
+    }
+
+    public function getCpfCnpj() {
+        return $this->cpf_cnpf;
+    }
+
+    public function getEndereco() {
+        return $this->endereco;
+    }
+
+    public function getAccountType() {
+        return $this->account_type;
+    }
+
+    // Função para verificar se o ISBN já está cadastrado
+    // Função para verificar se o ISBN já existe
+    public function verificarISBN($isbn) {
+        $sql = "SELECT id FROM livros WHERE isbn = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('s', $isbn);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+    }
+
+    // Função para adicionar livro
+    public function adicionarLivro($titulo, $autor, $isbn, $capa_tipo, $ano_lancamento, $caminhoCapa) {
+        $sql = "INSERT INTO livros (titulo, autor, isbn, capa_tipo, ano_lancamento, caminho_capa) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('ssssss', $titulo, $autor, $isbn, $capa_tipo, $ano_lancamento, $caminhoCapa);
+        $stmt->execute();
+        return $this->conn->insert_id;  // Retorna o ID do livro inserido
+    }
+
+    // Função para adicionar o livro à lista de um usuário
+    public function adicionarLivroLista($user_id, $livro_id) {
+        $sql = "INSERT INTO lista_livros (id_usuario, id_livro) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('ii', $user_id, $livro_id);
+        return $stmt->execute();
+    }
+
+
+    // Função para exibir os livros salvos no feed do usuário
+    public function exibirLivrosFeed($id_usuario) {
+        $sql = "SELECT livros.titulo, livros.autor, livros.caminho_capa FROM livros
+                INNER JOIN lista_livros ON livros.id = lista_livros.id_livro
+                WHERE lista_livros.id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $livros = [];
+        while ($row = $result->fetch_assoc()) {
+            $livros[] = $row;
+        }
+        return $livros;
+    }
+
 }
+
+    
 ?>
