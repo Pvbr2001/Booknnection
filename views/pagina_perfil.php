@@ -17,13 +17,13 @@ $user->loadById($_SESSION['user_id']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booknnection - Perfil de Usuário</title>
-    <link rel="stylesheet" href="../public/estilos_css/perfil_usuario.css">
-    <link rel="stylesheet" href="../public/estilos_css/pagina_principal.css">
+    <link rel="stylesheet" href="../public/estilos_css/header.css">
+    <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
     <link rel="stylesheet" href="../public/estilos_css/sidebar.css">
 </head>
 <body>
-    <header class="is-transitioned">
+    <header class="header is-transitioned">
         <div class="header-content">
             <h1>
                 <a href="../views/pagina_principal.html" class="title-link">Booknnection</a>
@@ -43,7 +43,7 @@ $user->loadById($_SESSION['user_id']);
     <!-- Main container -->
     <div class="main-container">
         <!-- Sidebar esquerda -->
-        <aside class="sidebar-left">
+        <aside class="sidebar-left is-transitioned">
             <div class="sidebar-section">
                 <h2>Tópicos Populares</h2>
                 <ul>
@@ -91,7 +91,7 @@ $user->loadById($_SESSION['user_id']);
         </main>
 
         <!-- Sidebar direita -->
-        <aside class="sidebar-right">
+        <aside class="sidebar-right is-transitioned">
             <div class="sidebar-section">
                 <h2>Tópicos Recentes</h2>
                 <ul>

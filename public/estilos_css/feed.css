@@ -1,3 +1,26 @@
+.main-container {
+    display: flex;
+    flex-direction: row;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 1200px;
+    margin-top: 80px; 
+    box-sizing: border-box;
+    overflow: hidden; /* Remove rolagem */
+}
+
+.post {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.post h2 {
+    margin-top: 0;
+}
+
 /* Conteúdo principal do perfil */
 .profile-content {
     flex: 2;

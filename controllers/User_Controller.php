@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user->loadById($_SESSION['user_id']);
             header('Location: ../views/pagina_perfil.php?username=' . urlencode($user->getUsername()));
         } else {
-            header('Location: ../views/login.html');
+            header('Location: ../views/pagina_login.html');
         }
     } else {
         echo 'InvalidAction';
