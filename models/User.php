@@ -137,5 +137,54 @@ class User {
     public function getAccountType() {
         return $this->account_type;
     }
+
+    // Função para verificar se o ISBN já está cadastrado
+    // Função para verificar se o ISBN já existe
+    public function verificarISBN($isbn) {
+        $sql = "SELECT id FROM livros WHERE isbn = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('s', $isbn);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+    }
+
+    // Função para adicionar livro
+    public function adicionarLivro($titulo, $autor, $isbn, $capa_tipo, $ano_lancamento, $caminhoCapa) {
+        $sql = "INSERT INTO livros (titulo, autor, isbn, capa_tipo, ano_lancamento, caminho_capa) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('ssssss', $titulo, $autor, $isbn, $capa_tipo, $ano_lancamento, $caminhoCapa);
+        $stmt->execute();
+        return $this->conn->insert_id;  // Retorna o ID do livro inserido
+    }
+
+    // Função para adicionar o livro à lista de um usuário
+    public function adicionarLivroLista($user_id, $livro_id) {
+        $sql = "INSERT INTO lista_livros (id_usuario, id_livro) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('ii', $user_id, $livro_id);
+        return $stmt->execute();
+    }
+
+
+    // Função para exibir os livros salvos no feed do usuário
+    public function exibirLivrosFeed($id_usuario) {
+        $sql = "SELECT livros.titulo, livros.autor, livros.caminho_capa FROM livros
+                INNER JOIN lista_livros ON livros.id = lista_livros.id_livro
+                WHERE lista_livros.id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $livros = [];
+        while ($row = $result->fetch_assoc()) {
+            $livros[] = $row;
+        }
+        return $livros;
+    }
+
 }
+
+    
 ?>

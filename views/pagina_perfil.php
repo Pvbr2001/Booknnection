@@ -40,9 +40,9 @@ $user->loadById($_SESSION['user_id']);
     </header>
 
     <!-- Main container -->
-    <div class="main-container main-content is-transitioned">
-        <!-- Sidebar esquerda reutilizada -->
-        <aside class="sidebar-left">
+    <div class="main-container">
+        <!-- Sidebar esquerda -->
+        <aside class="sidebar-left fixed-sidebar is-transitioned">
             <nav>
                 <ul>
                     <li><a href="#">Home</a></li>
@@ -57,7 +57,7 @@ $user->loadById($_SESSION['user_id']);
         </aside>
 
         <!-- Seção de perfil do usuário -->
-        <main class="profile-content">
+        <main class="profile-content is-transitioned">
             <div class="profile-header">
                 <div class="profile-banner">
                     <img src="../public/imagens/paisagem.jpg" alt="Banner do Usuário">
@@ -76,19 +76,21 @@ $user->loadById($_SESSION['user_id']);
 
             <!-- Seção de postagens -->
             <div class="feed">
-                <div class="post">
-                    <h2>Postagem do Usuário</h2>
-                    <p>Este é um exemplo de uma postagem...</p>
-                </div>
-                <div class="post">
-                    <h2>Postagem do Usuário</h2>
-                    <p>Conteúdo da postagem 2...</p>
-                </div>
+                <?php
+                $livros = $user->exibirLivrosFeed($_SESSION['user_id']);
+                foreach ($livros as $livro) {
+                    echo "<div class='post'>";
+                    echo "<h2>" . htmlspecialchars($livro['titulo']) . "</h2>";
+                    echo "<p>Autor: " . htmlspecialchars($livro['autor']) . "</p>";
+                    echo "<img src='" . htmlspecialchars($livro['caminho_capa']) . "' alt='Capa do Livro'>";
+                    echo "</div>";
+                }
+                ?>
             </div>
         </main>
 
-        <!-- Sidebar direita reutilizada -->
-        <aside class="sidebar-right">
+        <!-- Sidebar direita -->
+        <aside class="sidebar-right fixed-sidebar is-transitioned">
             <div class="suggestions">
                 <h2>Talvez você curta</h2>
                 <ul>
@@ -100,7 +102,7 @@ $user->loadById($_SESSION['user_id']);
         </aside>
     </div>
 
-    <!-- Footer reutilizado -->
+    <!-- Footer -->
     <footer class="is-transitioned">
         <p>&copy; 2024 Booknnection</p>
     </footer>
@@ -109,12 +111,30 @@ $user->loadById($_SESSION['user_id']);
     <div id="popup" class="popup-container">
         <div class="popup-content">
             <span id="close-popup" class="popup-close">&times;</span>
-            <div class="popup-image-container">
-                <img src="../public/imagens/book-cover.jpg" alt="Book Cover" class="popup-image">
-            </div>
-            <h2>Descrição:</h2>
-            <input type="text" placeholder="Adicione a descrição aqui...">
-            <button>Salvar</button>
+            <h2>Adicionar Livro</h2>
+            <form action="../controllers/user_controller.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="acao" value="adicionar_livro">
+                <label for="titulo">Título do livro:</label>
+                <input type="text" name="titulo" id="titulo" required>
+
+                <label for="autor">Autor:</label>
+                <input type="text" name="autor" id="autor" required>
+
+                <label for="isbn">ISBN:</label>
+                <input type="text" name="isbn" id="isbn" required>
+
+                <label for="capa_tipo">Tipo de Capa:</label>
+                <input type="text" name="capa_tipo" id="capa_tipo">
+
+                <label for="ano_lancamento">Ano de Lançamento:</label>
+                <input type="number" name="ano_lancamento" id="ano_lancamento" required>
+
+                <label for="capa">Capa do Livro:</label>
+                <input type="file" name="capa" id="capa">
+
+                <button type="submit">Adicionar Livro ao Banco</button>
+                <button type="submit" name="adicionar_lista" value="1">Adicionar Livro ao Banco e à Lista</button>
+            </form>
         </div>
     </div>
 
@@ -123,39 +143,41 @@ $user->loadById($_SESSION['user_id']);
         document.addEventListener('DOMContentLoaded', function() {
             // Remove the transition class for the main content after animation ends
             setTimeout(function() {
-                document.querySelector('.main-content').classList.remove('is-transitioned');
+                document.querySelector('.profile-content').classList.remove('is-transitioned');
                 document.querySelector('header').classList.remove('is-transitioned');
                 document.querySelector('footer').classList.remove('is-transitioned');
-            }, 5000); // Same duration as the animation (2s)
-        });
+                document.querySelector('.sidebar-left').classList.remove('is-transitioned');
+                document.querySelector('.sidebar-right').classList.remove('is-transitioned');
+            }, 5000); // Duração da animação (5s)
 
-        // Abrir e fechar o pop-up
-        const popup = document.getElementById("popup");
-        const addBookBtn = document.getElementById("add-book-btn");
-        const closePopup = document.getElementById("close-popup");
-        const mainContent = document.querySelector('.main-container');
+            // Abrir e fechar o pop-up
+            const popup = document.getElementById("popup");
+            const addBookBtn = document.getElementById("add-book-btn");
+            const closePopup = document.getElementById("close-popup");
+            const mainContent = document.querySelector('.main-container');
 
-        // Função para abrir o pop-up com animação
-        addBookBtn.onclick = function() {
-            popup.classList.add("open-popup");
-            mainContent.classList.add("darken");
-        }
+            // Função para abrir o pop-up com animação
+            addBookBtn.onclick = function() {
+                popup.classList.add("open-popup");
+                mainContent.classList.add("darken");
+            }
 
-        // Fechar o pop-up ao clicar no botão de fechar ou fora dele
-        closePopup.onclick = function() {
-            closePopupFunction();
-        }
-
-        window.onclick = function(event) {
-            if (event.target == popup) {
+            // Fechar o pop-up ao clicar no botão de fechar ou fora dele
+            closePopup.onclick = function() {
                 closePopupFunction();
             }
-        }
 
-        function closePopupFunction() {
-            popup.classList.remove("open-popup");
-            mainContent.classList.remove("darken");
-        }
+            window.onclick = function(event) {
+                if (event.target == popup) {
+                    closePopupFunction();
+                }
+            }
+
+            function closePopupFunction() {
+                popup.classList.remove("open-popup");
+                mainContent.classList.remove("darken");
+            }
+        });
     </script>
 </body>
 </html>

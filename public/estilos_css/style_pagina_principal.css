@@ -23,7 +23,6 @@ html, body {
     width: 100%; /* Garante que o conteúdo não exceda a largura da viewport */
     box-sizing: border-box; /* Inclui padding e border na largura total */
     overflow-x: hidden;
-    box-sizing: border-box;
 }
 
 @keyframes fade-in {
@@ -58,7 +57,6 @@ html, body {
 .profile-icon img:hover {
     opacity: 0.8; /* Efeito de hover opcional */
 }
-
 
 .title-link {
     text-decoration: none; /* Remove o sublinhado */
@@ -146,7 +144,7 @@ header {
     padding: 20px;
     max-width: 1200px;
     margin-top: 80px; /* Espaço suficiente para o header fixo */
-    overflow-y: hidden; /* Evita scroll horizontal */
+    overflow-y: hidden; /* Evita scroll vertical */
     box-sizing: border-box;
 }
 
@@ -205,7 +203,6 @@ header {
     background-color: #2c3e50;
 }
 
-
 .feed {
     flex: 2;
     margin: 0 10px;
@@ -251,4 +248,35 @@ footer {
     .search-form input[type="text"], .search-form button {
         font-size: 14px;
     }
+}
+
+/* Adicionando regras para fixar as sidebars */
+.fixed-sidebar {
+    position: sticky;
+    top: 80px; /* Ajuste conforme a altura do header */
+    height: calc(100vh - 160px); /* Ajuste conforme a altura do header e footer */
+    overflow-y: auto;
+    z-index: 999; /* Garante que as sidebars fiquem acima do conteúdo principal */
+}
+
+.sidebar-left.fixed-sidebar {
+    width: 200px; /* Ajuste conforme necessário */
+}
+
+.sidebar-right.fixed-sidebar {
+    width: 200px; /* Ajuste conforme necessário */
+}
+
+.profile-content {
+    flex: 2;
+    margin: 0 20px;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 160px); /* Ajuste conforme a altura do header e footer */
+}
+
+/* Adicionando transição de fade-in para as sidebars */
+.sidebar-left.is-transitioned, .sidebar-right.is-transitioned {
+    animation: fade-in-only 2s forwards;
+    opacity: 0;
 }
