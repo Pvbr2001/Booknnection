@@ -17,9 +17,10 @@ $user->loadById($_SESSION['user_id']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booknnection - Perfil de Usuário</title>
-    <link rel="stylesheet" href="../public/estilos_css/style_perfil_usuario.css">
-    <link rel="stylesheet" href="../public/estilos_css/style_pagina_principal.css">
+    <link rel="stylesheet" href="../public/estilos_css/perfil_usuario.css">
+    <link rel="stylesheet" href="../public/estilos_css/pagina_principal.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
+    <link rel="stylesheet" href="../public/estilos_css/sidebar.css">
 </head>
 <body>
     <header class="is-transitioned">
@@ -31,9 +32,9 @@ $user->loadById($_SESSION['user_id']);
                 <input type="text" placeholder="Pesquisar...">
                 <button type="submit">Buscar</button>
             </form>
-            <div class="profile-icon">
+            <div class="header-icon">
                 <a href="../views/pagina_perfil.php">
-                    <img src="../public/imagens/Corgi.png" alt="Ícone de Perfil">
+                    <img src="../public/imagens/Corgi.png" alt="Ícone de header">
                 </a>
             </div>
         </div>
@@ -42,18 +43,18 @@ $user->loadById($_SESSION['user_id']);
     <!-- Main container -->
     <div class="main-container">
         <!-- Sidebar esquerda -->
-        <aside class="sidebar-left fixed-sidebar is-transitioned">
-            <nav>
+        <aside class="sidebar-left">
+            <div class="sidebar-section">
+                <h2>Tópicos Populares</h2>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Explorar</a></li>
-                    <li><a href="#">Mensagens</a></li>
-                    <li><a href="#">Notificações</a></li>
-                    <li><a href="#">Perfil</a></li>
-                    <li><a href="#">Configurações</a></li>
+                    <li><a href="#">Tópico 1</a></li>
+                    <li><a href="#">Tópico 2</a></li>
+                    <li><a href="#">Tópico 3</a></li>
                 </ul>
-            </nav>
+            </div>
             <button id="add-book-btn" class="sidebar-button">Adicionar Livro!</button>
+            <button class="sidebar-button">Botão Lateral 1</button>
+            <button class="sidebar-button">Botão Lateral 2</button>
         </aside>
 
         <!-- Seção de perfil do usuário -->
@@ -90,22 +91,20 @@ $user->loadById($_SESSION['user_id']);
         </main>
 
         <!-- Sidebar direita -->
-        <aside class="sidebar-right fixed-sidebar is-transitioned">
-            <div class="suggestions">
-                <h2>Talvez você curta</h2>
+        <aside class="sidebar-right">
+            <div class="sidebar-section">
+                <h2>Tópicos Recentes</h2>
                 <ul>
-                    <li><a href="#">Usuário A</a> <button class="follow-suggestion">Seguir</button></li>
-                    <li><a href="#">Usuário B</a> <button class="follow-suggestion">Seguir</button></li>
-                    <li><a href="#">Usuário C</a> <button class="follow-suggestion">Seguir</button></li>
+                    <li><a href="#">Tópico A</a></li>
+                    <li><a href="#">Tópico B</a></li>
+                    <li><a href="#">Tópico C</a></li>
                 </ul>
             </div>
+            <button class="sidebar-button">Botão Lateral A</button>
+            <button class="sidebar-button">Botão Lateral B</button>
         </aside>
     </div>
 
-    <!-- Footer -->
-    <footer class="is-transitioned">
-        <p>&copy; 2024 Booknnection</p>
-    </footer>
 
     <!-- Pop-up -->
     <div id="popup" class="popup-container">

@@ -2,6 +2,7 @@
 .profile-content {
     flex: 2;
     margin: 0 20px;
+    overflow: hidden; /* Impede rolagem */
 }
 
 .profile-header {
@@ -67,6 +68,7 @@
 /* Feed de postagens */
 .feed {
     margin-top: 20px;
+    overflow: hidden; /* Impede rolagem */
 }
 
 .post {
@@ -77,32 +79,40 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Sidebar direita (Sugestões de perfis) */
-.suggestions h2 {
-    margin-top: 0;
+.post img {
+    max-width: 100%; /* Garante que a imagem não ultrapasse a largura do contêiner */
+    height: auto;    /* Mantém a proporção da imagem */
+    display: block;  /* Remove espaço em branco abaixo da imagem */
 }
 
-.suggestions ul {
-    list-style: none;
-    padding: 0;
+.profile-content.is-transitioned,
+.feed.is-transitioned {
+    animation: fade-in 1.5s forwards;
+    opacity: 0;
+    transform: translateY(50vh);
+    width: 100%; /* Garante que o conteúdo não exceda a largura da viewport */
+    box-sizing: border-box; /* Inclui padding e border na largura total */
+    overflow: hidden;
 }
 
-.suggestions ul li {
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.feed {
+    flex: 2;
+    margin: 0 10px;
+    overflow: hidden; /* Certifique-se de que não apareçam barras de rolagem */
 }
 
-.follow-suggestion {
-    padding: 5px 10px;
-    background-color: #1da1f2;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
+.feed.is-transitioned {
+    animation: fade-in 1.5s forwards; /* Animação da feed */
 }
 
-.follow-suggestion:hover {
-    background-color: #2980b9;
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(50vh);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+

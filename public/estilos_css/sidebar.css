@@ -1,0 +1,55 @@
+/* sidebar.css */
+
+.sidebar-left, .sidebar-right {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.sidebar-left {
+    background-color: #d9dedf;
+    padding: 20px;
+    border-radius: 8px;
+  
+}
+
+.sidebar-right {
+    background-color: #d9dedf;
+    padding: 20px;
+    border-radius: 8px;
+  
+}
+
+.sidebar-button {
+    display: block;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.sidebar-button:hover {
+    background-color: #2980b9;
+}
+
+/* Regras para fixar as sidebars */
+.fixed-sidebar {
+    position: sticky;
+    z-index: 999; /* Garante que as sidebars fiquem acima do conteúdo principal */
+}
+
+.profile-content {
+    flex: 2;
+    margin: 0 20px;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 160px); /* Ajuste conforme a altura do header e footer */
+}
+
+/* Adicionando transição de fade-in para as sidebars */
+.sidebar-left.is-transitioned, .sidebar-right.is-transitioned {
+    animation: fade-in-only 2s forwards;
+    opacity: 0;
+}
