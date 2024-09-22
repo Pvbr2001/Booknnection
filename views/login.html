@@ -25,3 +25,16 @@
     </div>
 </body>
 </html>
+<script type="module">
+    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
+  
+    Typebot.initBubble({
+      apiHost: "http://locahost:8080",
+      previewMessage: { message: "I have a question for you!" },
+      theme: {
+        button: { backgroundColor: "#0042DA" },
+        chatWindow: { backgroundColor: "#fff" },
+      },
+    });
+  </script>
+  
