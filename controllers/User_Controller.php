@@ -87,23 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo "<script>alert('Erro ao criar post');</script>";
         }
-    } elseif ($acao === 'curtir_post') {
-        $id_post = $_POST['id_post'];
-
-        if ($user->curtirPost($id_post)) {
-            echo "Post curtido com sucesso";
-        } else {
-            echo "Erro ao curtir post";
-        }
-    } elseif ($acao === 'salvar_post') {
-        $id_usuario = $_SESSION['user_id'];
-        $id_post = $_POST['id_post'];
-
-        if ($user->salvarPost($id_usuario, $id_post)) {
-            echo "Post salvo com sucesso";
-        } else {
-            echo "Erro ao salvar post";
-        }
     } else {
         echo 'InvalidAction';
     }
