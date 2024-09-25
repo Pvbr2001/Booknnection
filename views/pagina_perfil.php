@@ -9,6 +9,9 @@ if (!isset($_SESSION['user_id'])) {
 
 $user = new User();
 $user->loadById($_SESSION['user_id']);
+$livros = $user->exibirLivrosFeed($_SESSION['user_id']);
+$postsSalvos = $user->exibirPostsSalvos($_SESSION['user_id']);
+$postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
 ?>
 
 <!DOCTYPE html>
@@ -75,15 +78,68 @@ $user->loadById($_SESSION['user_id']);
                 </div>
             </div>
 
+            <!-- Navegação entre feed, lista de livros e posts salvos -->
+            <div class="navigation">
+                <button class="nav-button" id="feed-btn">Feed</button>
+                <button class="nav-button" id="books-btn">Lista de Livros</button>
+                <button class="nav-button" id="saved-posts-btn">Posts Salvos</button>
+            </div>
+
             <!-- Seção de postagens -->
-            <div class="feed">
+            <div id="feed" class="feed">
                 <?php
-                $livros = $user->exibirLivrosFeed($_SESSION['user_id']);
+                foreach ($postsDoUsuario as $post) {
+                    echo "<div class='post'>";
+                    echo "<h2>" . htmlspecialchars($post['titulo']) . "</h2>";
+                    echo "<p>" . htmlspecialchars($post['descricao']) . "</p>";
+                    echo "<img src='" . htmlspecialchars($post['caminho_capa']) . "' alt='Capa do Livro'>";
+                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
+                    echo "<input type='hidden' name='acao' value='curtir_post'>";
+                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
+                    echo "<button type='submit'>Curtir (" . $post['curtidas'] . ")</button>";
+                    echo "</form>";
+                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
+                    echo "<input type='hidden' name='acao' value='salvar_post'>";
+                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
+                    echo "<button type='submit'>Salvar</button>";
+                    echo "</form>";
+                    echo "</div>";
+                }
+                ?>
+            </div>
+
+            <!-- Seção de livros -->
+            <div id="books" class="feed" style="display:none;">
+                <?php
                 foreach ($livros as $livro) {
                     echo "<div class='post'>";
                     echo "<h2>" . htmlspecialchars($livro['titulo']) . "</h2>";
                     echo "<p>Autor: " . htmlspecialchars($livro['autor']) . "</p>";
                     echo "<img src='" . htmlspecialchars($livro['caminho_capa']) . "' alt='Capa do Livro'>";
+                    echo "<button onclick='openCreatePostPopup(" . $livro['id'] . ")'>Criar Post</button>";
+                    echo "</div>";
+                }
+                ?>
+            </div>
+
+            <!-- Seção de posts salvos -->
+            <div id="saved-posts" class="feed" style="display:none;">
+                <?php
+                foreach ($postsSalvos as $post) {
+                    echo "<div class='post'>";
+                    echo "<h2>" . htmlspecialchars($post['titulo']) . "</h2>";
+                    echo "<p>" . htmlspecialchars($post['descricao']) . "</p>";
+                    echo "<img src='" . htmlspecialchars($post['caminho_capa']) . "' alt='Capa do Livro'>";
+                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
+                    echo "<input type='hidden' name='acao' value='curtir_post'>";
+                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
+                    echo "<button type='submit'>Curtir (" . $post['curtidas'] . ")</button>";
+                    echo "</form>";
+                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
+                    echo "<input type='hidden' name='acao' value='salvar_post'>";
+                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
+                    echo "<button type='submit'>Salvar</button>";
+                    echo "</form>";
                     echo "</div>";
                 }
                 ?>
@@ -132,6 +188,26 @@ $user->loadById($_SESSION['user_id']);
 
                 <button type="submit">Adicionar Livro ao Banco</button>
                 <button type="submit" name="adicionar_lista" value="1">Adicionar Livro ao Banco e à Lista</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pop-up para criar post -->
+    <div id="create-post-popup" class="popup-container">
+        <div class="popup-content">
+            <span id="close-create-post-popup" class="popup-close">&times;</span>
+            <h2>Criar Post</h2>
+            <form action="../controllers/user_controller.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="acao" value="criar_post">
+                <input type="hidden" name="id_livro" id="id_livro" value="">
+                <input type="hidden" name="cidade" id="cidade" value="<?php echo $user->getCidade(); ?>">
+                <label for="titulo_post">Título do Post:</label>
+                <input type="text" name="titulo" id="titulo_post" required>
+
+                <label for="descricao_post">Descrição do Post:</label>
+                <textarea name="descricao" id="descricao_post" required></textarea>
+
+                <button type="submit">Criar Post</button>
             </form>
         </div>
     </div>
@@ -201,10 +277,61 @@ $user->loadById($_SESSION['user_id']);
                 popup.classList.remove("open-popup");
                 mainContent.classList.remove("darken");
             }
+
+            // Função para abrir o pop-up de criar post
+            window.openCreatePostPopup = function(id_livro) {
+                document.getElementById('id_livro').value = id_livro;
+                const createPostPopup = document.getElementById("create-post-popup");
+                createPostPopup.classList.add("open-popup");
+                mainContent.classList.add("darken");
+            }
+
+            // Fechar o pop-up de criar post ao clicar no botão de fechar ou fora dele
+            const closeCreatePostPopup = document.getElementById("close-create-post-popup");
+            closeCreatePostPopup.onclick = function() {
+                closeCreatePostPopupFunction();
+            }
+
+            window.onclick = function(event) {
+                if (event.target == createPostPopup) {
+                    closeCreatePostPopupFunction();
+                }
+            }
+
+            function closeCreatePostPopupFunction() {
+                createPostPopup.classList.remove("open-popup");
+                mainContent.classList.remove("darken");
+            }
+
+            // Funções para navegar entre feed, lista de livros e posts salvos
+            function showFeed() {
+                document.getElementById('feed').style.display = 'block';
+                document.getElementById('books').style.display = 'none';
+                document.getElementById('saved-posts').style.display = 'none';
+            }
+
+            function showBooks() {
+                document.getElementById('feed').style.display = 'none';
+                document.getElementById('books').style.display = 'block';
+                document.getElementById('saved-posts').style.display = 'none';
+            }
+
+            function showSavedPosts() {
+                document.getElementById('feed').style.display = 'none';
+                document.getElementById('books').style.display = 'none';
+                document.getElementById('saved-posts').style.display = 'block';
+            }
+
+            // Adicionar event listeners aos botões de navegação
+            document.getElementById('feed-btn').addEventListener('click', showFeed);
+            document.getElementById('books-btn').addEventListener('click', showBooks);
+            document.getElementById('saved-posts-btn').addEventListener('click', showSavedPosts);
         });
     </script>
 </body>
 </html>
+
+
 
 <script type="module">
     import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'

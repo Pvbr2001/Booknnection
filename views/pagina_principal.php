@@ -9,7 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $user = new User();
 $user->loadById($_SESSION['user_id']);
-$livros = $user->exibirTodosLivros();
+$cidade = $user->getCidade();
+$posts = $user->exibirPostsPorCidade($cidade);
 ?>
 
 <!DOCTYPE html>
@@ -63,11 +64,21 @@ $livros = $user->exibirTodosLivros();
             <!-- Seção de postagens -->
             <div class="feed">
                 <?php
-                foreach ($livros as $livro) {
+                foreach ($posts as $post) {
                     echo "<div class='post'>";
-                    echo "<h2>" . htmlspecialchars($livro['titulo']) . "</h2>";
-                    echo "<p>Autor: " . htmlspecialchars($livro['autor']) . "</p>";
-                    echo "<img src='" . htmlspecialchars($livro['caminho_capa']) . "' alt='Capa do Livro'>";
+                    echo "<h2>" . htmlspecialchars($post['titulo']) . "</h2>";
+                    echo "<p>" . htmlspecialchars($post['descricao']) . "</p>";
+                    echo "<img src='" . htmlspecialchars($post['caminho_capa']) . "' alt='Capa do Livro'>";
+                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
+                    echo "<input type='hidden' name='acao' value='curtir_post'>";
+                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
+                    echo "<button type='submit'>Curtir (" . $post['curtidas'] . ")</button>";
+                    echo "</form>";
+                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
+                    echo "<input type='hidden' name='acao' value='salvar_post'>";
+                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
+                    echo "<button type='submit'>Salvar</button>";
+                    echo "</form>";
                     echo "</div>";
                 }
                 ?>
@@ -116,6 +127,26 @@ $livros = $user->exibirTodosLivros();
 
                 <button type="submit">Adicionar Livro ao Banco</button>
                 <button type="submit" name="adicionar_lista" value="1">Adicionar Livro ao Banco e à Lista</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pop-up para criar post -->
+    <div id="create-post-popup" class="popup-container">
+        <div class="popup-content">
+            <span id="close-create-post-popup" class="popup-close">&times;</span>
+            <h2>Criar Post</h2>
+            <form action="../controllers/user_controller.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="acao" value="criar_post">
+                <input type="hidden" name="id_livro" id="id_livro" value="">
+                <input type="hidden" name="cidade" id="cidade" value="<?php echo $user->getCidade(); ?>">
+                <label for="titulo_post">Título do Post:</label>
+                <input type="text" name="titulo" id="titulo_post" required>
+
+                <label for="descricao_post">Descrição do Post:</label>
+                <textarea name="descricao" id="descricao_post" required></textarea>
+
+                <button type="submit">Criar Post</button>
             </form>
         </div>
     </div>
@@ -187,6 +218,8 @@ $livros = $user->exibirTodosLivros();
     </script>
 </body>
 </html>
+
+
 <script type="module">
     import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
 

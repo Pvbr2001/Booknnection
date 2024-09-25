@@ -1,6 +1,7 @@
 CREATE DATABASE booknnection;
 
 USE booknnection;
+
 CREATE TABLE usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -9,6 +10,7 @@ CREATE TABLE usuario (
     account_type ENUM('fisica', 'juridica') NOT NULL,
     cpf_cnpf VARBINARY(255) NOT NULL UNIQUE,
     endereco VARCHAR(100) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -30,9 +32,26 @@ CREATE TABLE lista_livros (
     FOREIGN KEY (id_livro) REFERENCES livros(id)
 );
 
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_livro INT NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT NOT NULL,
+    curtidas INT DEFAULT 0,
+    cidade VARCHAR(100) NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    FOREIGN KEY (id_livro) REFERENCES livros(id)
+);
+
+CREATE TABLE posts_salvos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_post INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    FOREIGN KEY (id_post) REFERENCES posts(id)
+);
+
 ALTER USER 'root'@'localhost' IDENTIFIED BY '81631240';
 FLUSH PRIVILEGES;
-
-delete from livros where id = 02;
-select * from livros;
 

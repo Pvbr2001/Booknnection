@@ -7,7 +7,6 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-// Arquivo de criação do usuário no bd
 class User {
     private $conn;
     private $chave;
@@ -17,6 +16,7 @@ class User {
     private $nome;
     private $cpf_cnpf;
     private $endereco;
+    private $cidade;
     private $account_type;
 
     public function __construct() {
@@ -26,7 +26,7 @@ class User {
     }
 
     // Função para registro do usuário encriptografando os dados pessoais como senha e CPF
-    public function register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco) {
+    public function register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade) {
         if ($this->userExists($email)) {
             return 'UserExists'; // Usuário já existe
         }
@@ -34,9 +34,9 @@ class User {
         $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
         $cpfCnpjCriptografado = openssl_encrypt($cpf_cnpf, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
 
-        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco, cidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param('ssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco);
+        $stmt->bind_param('sssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade);
 
         if ($stmt->execute()) {
             return 'Success'; // Cadastro bem-sucedido
@@ -58,7 +58,7 @@ class User {
 
     // Função para login desencriptografando a senha
     public function login($email, $senha) {
-        $sql = "SELECT id, senha, nome, email, account_type, cpf_cnpf, endereco FROM usuario WHERE email = ?";
+        $sql = "SELECT id, senha, nome, email, account_type, cpf_cnpf, endereco, cidade FROM usuario WHERE email = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('s', $email);
         $stmt->execute();
@@ -68,7 +68,7 @@ class User {
             return false;
         }
 
-        $stmt->bind_result($id, $senhaCriptografada, $nome, $email, $account_type, $cpf_cnpf, $endereco);
+        $stmt->bind_result($id, $senhaCriptografada, $nome, $email, $account_type, $cpf_cnpf, $endereco, $cidade);
         $stmt->fetch();
 
         $senhaDescriptografada = openssl_decrypt($senhaCriptografada, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
@@ -80,6 +80,7 @@ class User {
             $this->nome = $nome;
             $this->cpf_cnpf = $cpf_cnpf;
             $this->endereco = $endereco;
+            $this->cidade = $cidade;
             $this->account_type = $account_type;
             return true;
         }
@@ -89,14 +90,14 @@ class User {
 
     // Função para carregar as informações do usuário pelo ID
     public function loadById($id) {
-        $sql = "SELECT id, nome, email, account_type, cpf_cnpf, endereco FROM usuario WHERE id = ?";
+        $sql = "SELECT id, nome, email, account_type, cpf_cnpf, endereco, cidade FROM usuario WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $stmt->bind_result($id, $nome, $email, $account_type, $cpf_cnpf, $endereco);
+            $stmt->bind_result($id, $nome, $email, $account_type, $cpf_cnpf, $endereco, $cidade);
             $stmt->fetch();
 
             $this->id = $id;
@@ -105,6 +106,7 @@ class User {
             $this->nome = $nome;
             $this->cpf_cnpf = $cpf_cnpf;
             $this->endereco = $endereco;
+            $this->cidade = $cidade;
             $this->account_type = $account_type;
         }
     }
@@ -134,12 +136,15 @@ class User {
         return $this->endereco;
     }
 
+    public function getCidade() {
+        return $this->cidade;
+    }
+
     public function getAccountType() {
         return $this->account_type;
     }
 
     // Função para verificar se o ISBN já está cadastrado
-    // Função para verificar se o ISBN já existe
     public function verificarISBN($isbn) {
         $sql = "SELECT id FROM livros WHERE isbn = ?";
         $stmt = $this->conn->prepare($sql);
@@ -166,17 +171,16 @@ class User {
         return $stmt->execute();
     }
 
-
     // Função para exibir os livros salvos no feed do usuário
     public function exibirLivrosFeed($id_usuario) {
-        $sql = "SELECT livros.titulo, livros.autor, livros.caminho_capa FROM livros
+        $sql = "SELECT livros.id, livros.titulo, livros.autor, livros.caminho_capa FROM livros
                 INNER JOIN lista_livros ON livros.id = lista_livros.id_livro
                 WHERE lista_livros.id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('i', $id_usuario);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $livros = [];
         while ($row = $result->fetch_assoc()) {
             $livros[] = $row;
@@ -184,7 +188,7 @@ class User {
         return $livros;
     }
 
-    // Adicionar esta função na classe User
+    // Função para exibir todos os livros
     public function exibirTodosLivros() {
         $sql = "SELECT titulo, autor, caminho_capa FROM livros";
         $stmt = $this->conn->prepare($sql);
@@ -197,5 +201,85 @@ class User {
         }
         return $livros;
     }
-}  
+
+    // Função para criar um post
+    public function criarPost($id_usuario, $id_livro, $titulo, $descricao, $cidade) {
+        $sql = "INSERT INTO posts (id_usuario, id_livro, titulo, descricao, cidade) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('iisss', $id_usuario, $id_livro, $titulo, $descricao, $cidade);
+        return $stmt->execute();
+    }
+
+    // Função para exibir posts baseados na cidade do usuário
+    public function exibirPostsPorCidade($cidade) {
+        $sql = "SELECT p.id, p.titulo, p.descricao, p.curtidas, l.caminho_capa
+                FROM posts p
+                JOIN usuario u ON p.id_usuario = u.id
+                JOIN livros l ON p.id_livro = l.id
+                WHERE u.cidade = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('s', $cidade);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $posts = [];
+        while ($row = $result->fetch_assoc()) {
+            $posts[] = $row;
+        }
+        return $posts;
+    }
+
+    // Função para curtir um post
+    public function curtirPost($id_post) {
+        $sql = "UPDATE posts SET curtidas = curtidas + 1 WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_post);
+        return $stmt->execute();
+    }
+
+    // Função para salvar um post
+    public function salvarPost($id_usuario, $id_post) {
+        $sql = "INSERT INTO posts_salvos (id_usuario, id_post) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('ii', $id_usuario, $id_post);
+        return $stmt->execute();
+    }
+
+    // Função para exibir posts salvos do usuário
+    public function exibirPostsSalvos($id_usuario) {
+        $sql = "SELECT p.id, p.titulo, p.descricao, p.curtidas, l.caminho_capa
+                FROM posts_salvos ps
+                JOIN posts p ON ps.id_post = p.id
+                JOIN livros l ON p.id_livro = l.id
+                WHERE ps.id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $posts = [];
+        while ($row = $result->fetch_assoc()) {
+            $posts[] = $row;
+        }
+        return $posts;
+    }
+
+    // Função para exibir todos os posts que o usuário criou
+    public function exibirPostsDoUsuario($id_usuario) {
+        $sql = "SELECT p.id, p.titulo, p.descricao, p.curtidas, l.caminho_capa
+                FROM posts p
+                JOIN livros l ON p.id_livro = l.id
+                WHERE p.id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $posts = [];
+        while ($row = $result->fetch_assoc()) {
+            $posts[] = $row;
+        }
+        return $posts;
+    }
+}
 ?>

@@ -31,11 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $account_type = $_POST['account_type'] ?? '';
         $cpf_cnpf = $_POST['cpf_cnpf'] ?? '';
         $endereco = $_POST['endereco'] ?? '';
+        $cidade = $_POST['cidade'] ?? '';
 
         if ($senha !== $confirmarSenha) {
             echo 'PasswordsDoNotMatch';
         } else {
-            $result = $user->register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco);
+            $result = $user->register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade);
             echo $result;
         }
     } elseif ($acao === 'check_auth') {
@@ -45,11 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             header('Location: ../views/pagina_login.html');
         }
-    } else {
-        echo 'InvalidAction';
-    }
-
-    if ($acao === 'adicionar_livro') {
+    } elseif ($acao === 'adicionar_livro') {
         $titulo = $_POST['titulo'];
         $autor = $_POST['autor'];
         $isbn = $_POST['isbn'];
@@ -78,6 +75,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             echo "<script>alert('Livro adicionado com sucesso');</script>";
         }
+    } elseif ($acao === 'criar_post') {
+        $id_usuario = $_SESSION['user_id'];
+        $id_livro = $_POST['id_livro'];
+        $titulo = $_POST['titulo'];
+        $descricao = $_POST['descricao'];
+        $cidade = $_POST['cidade'];
+
+        if ($user->criarPost($id_usuario, $id_livro, $titulo, $descricao, $cidade)) {
+            echo "<script>alert('Post criado com sucesso');</script>";
+        } else {
+            echo "<script>alert('Erro ao criar post');</script>";
+        }
+    } elseif ($acao === 'curtir_post') {
+        $id_post = $_POST['id_post'];
+
+        if ($user->curtirPost($id_post)) {
+            echo "Post curtido com sucesso";
+        } else {
+            echo "Erro ao curtir post";
+        }
+    } elseif ($acao === 'salvar_post') {
+        $id_usuario = $_SESSION['user_id'];
+        $id_post = $_POST['id_post'];
+
+        if ($user->salvarPost($id_usuario, $id_post)) {
+            echo "Post salvo com sucesso";
+        } else {
+            echo "Erro ao salvar post";
+        }
+    } else {
+        echo 'InvalidAction';
     }
 } else {
     echo 'InvalidRequestMethod';
