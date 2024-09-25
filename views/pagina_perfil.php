@@ -43,7 +43,6 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
         </div>
     </header>
 
-    <!-- Main container -->
     <div class="main-container">
         <!-- Sidebar esquerda -->
         <aside class="sidebar-left">
@@ -215,7 +214,7 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
     <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Função para aplicar a transição de fade-in
+            // Função para transição de fade-in
             function fadeIn(element, duration) {
                 element.style.opacity = 0;
                 element.style.transition = `opacity ${duration}s`;
@@ -224,7 +223,7 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
                 }, 0);
             }
 
-            // Função para aplicar a transição de baixo para cima
+            // Função para transição de baixo para cima
             function slideUp(element, duration) {
                 element.style.transform = 'translateY(100%)';
                 element.style.transition = `transform ${duration}s`;
@@ -233,7 +232,7 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
                 }, 0);
             }
 
-            // Aplicar a transição de fade-in aos elementos
+            //transição de fade-in aos elementos
             const profileContent = document.querySelector('.profile-content');
             const sidebarLeft = document.querySelector('.sidebar-left');
             const sidebarRight = document.querySelector('.sidebar-right');
@@ -244,25 +243,25 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
             fadeIn(sidebarRight, 1.5);
             fadeIn(header, 1.5);
 
-            // Aplicar a transição de baixo para cima ao feed e ao profile-header
+            // transição de baixo para cima  feed e profile-header
             const feed = document.querySelector('.feed');
             const profileHeader = document.querySelector('.profile-header');
             slideUp(feed, 1.5);
             slideUp(profileHeader, 1.5);
 
-            // Abrir e fechar o pop-up
+            //abrir e fechar o pop up
             const popup = document.getElementById("popup");
             const addBookBtn = document.getElementById("add-book-btn");
             const closePopup = document.getElementById("close-popup");
             const mainContent = document.querySelector('.main-container');
 
-            // Função para abrir o pop-up com animação
+            //função para abrir o pop-up com animação
             addBookBtn.onclick = function() {
                 popup.classList.add("open-popup");
                 mainContent.classList.add("darken");
             }
 
-            // Fechar o pop-up ao clicar no botão de fechar ou fora dele
+            //fechar o pop-up ao clicar no botão de fechar ou fora dele
             closePopup.onclick = function() {
                 closePopupFunction();
             }
@@ -286,7 +285,7 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
                 mainContent.classList.add("darken");
             }
 
-            // Fechar o pop-up de criar post ao clicar no botão de fechar ou fora dele
+            // Fechar o pop-up 
             const closeCreatePostPopup = document.getElementById("close-create-post-popup");
             closeCreatePostPopup.onclick = function() {
                 closeCreatePostPopupFunction();
@@ -321,8 +320,6 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
                 document.getElementById('books').style.display = 'none';
                 document.getElementById('saved-posts').style.display = 'block';
             }
-
-            // Adicionar event listeners aos botões de navegação
             document.getElementById('feed-btn').addEventListener('click', showFeed);
             document.getElementById('books-btn').addEventListener('click', showBooks);
             document.getElementById('saved-posts-btn').addEventListener('click', showSavedPosts);

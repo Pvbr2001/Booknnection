@@ -28,7 +28,7 @@ class User {
     // Função para registro do usuário encriptografando os dados pessoais como senha e CPF
     public function register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade) {
         if ($this->userExists($email)) {
-            return 'UserExists'; // Usuário já existe
+            return 'UserExists'; 
         }
 
         $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
@@ -39,9 +39,9 @@ class User {
         $stmt->bind_param('sssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade);
 
         if ($stmt->execute()) {
-            return 'Success'; // Cadastro bem-sucedido
+            return 'Success'; 
         } else {
-            return 'RegistrationFailed'; // Falha no cadastro
+            return 'RegistrationFailed'; 
         }
     }
 
@@ -88,7 +88,7 @@ class User {
         return false;
     }
 
-    // Função para carregar as informações do usuário pelo ID
+    //função para carregar as informações do usuário pelo ID
     public function loadById($id) {
         $sql = "SELECT id, nome, email, account_type, cpf_cnpf, endereco, cidade FROM usuario WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
@@ -160,7 +160,7 @@ class User {
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('ssssss', $titulo, $autor, $isbn, $capa_tipo, $ano_lancamento, $caminhoCapa);
         $stmt->execute();
-        return $this->conn->insert_id;  // Retorna o ID do livro inserido
+        return $this->conn->insert_id;  //Retornar o ID do livro inserido
     }
 
     // Função para adicionar o livro à lista de um usuário

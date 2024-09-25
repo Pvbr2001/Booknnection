@@ -2,7 +2,7 @@
 session_start();
 require_once '../models/user.php';
 
-// Verifica se a requisição é um POST
+// verificar se é utilizado o metodo post
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
 
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $capa_tipo = $_POST['capa_tipo'];
         $ano_lancamento = $_POST['ano_lancamento'];
 
-        // Lidar com o upload da capa
+        //upload da capa
         $caminhoCapa = null;
         if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
             $extensao = pathinfo($_FILES['capa']['name'], PATHINFO_EXTENSION);
