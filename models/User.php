@@ -237,9 +237,14 @@ class User {
         return $stmt->execute();
     }
 
-    // Função para salvar um post
+    /**
+     * Summary of salvarPost
+     * @param mixed $id_usuario
+     * @param mixed $id_post
+     * @return bool
+     */
     public function salvarPost($id_usuario, $id_post) {
-        $sql = "INSERT INTO posts_salvos (id_usuario, id_post) VALUES (?, ?)";
+        $sql = "INSERT INTO posts_salvos (id_usuario, id_post) VALUES (?, ?)";//Adicionar o ID do post salvo
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('ii', $id_usuario, $id_post);
         return $stmt->execute();

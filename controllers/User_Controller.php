@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $caminhoCapa = null;
         if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
             $extensao = pathinfo($_FILES['capa']['name'], PATHINFO_EXTENSION);
-            $caminhoCapa = '../public/imagens/' . uniqid() . '.' . $extensao;
+            $caminhoCapa = '../public/imagens/' . uniqid().rand(0, 100000) . '.' . $extensao; // 
             move_uploaded_file($_FILES['capa']['tmp_name'], $caminhoCapa);
         }
 

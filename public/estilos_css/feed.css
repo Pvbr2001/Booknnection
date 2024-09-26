@@ -6,8 +6,9 @@
     max-width: 1200px;
     margin-top: 80px;
     box-sizing: border-box;
-    overflow: hidden; /* Remove rolagem */
+    overflow: hidden; 
     height: calc(100vh - 80px); 
+    padding-bottom: 40px;
 }
 
 .post {

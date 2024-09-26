@@ -1,17 +1,7 @@
 Vamos fazer logo esse projeto da certo.
 
-Script do banco mysql:
-
-CREATE DATABASE meu_banco_de_dados;
-USE meu_banco_de_dados; 
-
-CREATE TABLE usuario (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    account_type ENUM('fisica, juridica') NOT NULL,
-    cpf_cnpf VARCHAR(14) not null UNIQUE,
-    endereco VARCHAR(100) not null,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+* variavel de sessao para troca de livros
+* otimizar açoes necessarias do usuario(log out, auto preencher campos se sessao já existir, logar automatico caso sessao já existir)
+* clausula "in" no banco de dados para troca de livros
+* conexao com whatssap para chat
+* nao poder criar dois posts do mesmo livro do usuario
