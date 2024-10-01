@@ -23,6 +23,8 @@ $posts = $user->exibirPostsPorCidade($cidade);
     <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
     <link rel="stylesheet" href="../public/estilos_css/sidebar.css">
+    <link rel="stylesheet" href="../public/estilos_css/side_popup.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
     <header class="header">
@@ -38,6 +40,10 @@ $posts = $user->exibirPostsPorCidade($cidade);
                 <a href="../views/pagina_perfil.php">
                     <img src="../public/imagens/Corgi.png" alt="Ícone de header">
                 </a>
+                <button id="open-side-popup" class="customization_popup_trigger">
+                <span class="material-symbols-outlined">menu</span>
+                </button>
+
             </div>
         </div>
     </header>
@@ -151,7 +157,21 @@ $posts = $user->exibirPostsPorCidade($cidade);
         </div>
     </div>
 
+    <!-- Side Pop-up -->
+    <div class="customization_popup" role="alert">
+        <div class="customization_popup_container">
+            <p>Opções de Configurações</p>
+            <ul>
+                <li><a href="#">Configuração 1</a></li>
+                <li><a href="#">Configuração 2</a></li>
+                <li><a href="../controllers/User_Controller.php?acao=logout">Logout</a></li>
+            </ul>
+            <a href="#0" class="customization_popup_close img-replace">X</a>
+        </div>
+    </div>
+
     <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Função para aplicar a transição de fade-in
@@ -215,9 +235,30 @@ $posts = $user->exibirPostsPorCidade($cidade);
                 mainContent.classList.remove("darken");
             }
         });
+
+        // JavaScript para o side pop-up
+        jQuery(document).ready(function($) {
+            $('.customization_popup_trigger').on('click', function(event) {
+                event.preventDefault();
+                $('.customization_popup').addClass('is-visible');
+            });
+            $('.customization_popup').on('click', function(event) {
+                if ($(event.target).is('.customization_popup_close') || $(event.target).is('.customization_popup')) {
+                    event.preventDefault();
+                    $(this).removeClass('is-visible');
+                }
+            });
+            $(document).keyup(function(event) {
+                if (event.which == '27') {
+                    $('.customization_popup').removeClass('is-visible');
+                }
+            });
+        });
     </script>
 </body>
 </html>
+
+
 
 
 <script type="module">

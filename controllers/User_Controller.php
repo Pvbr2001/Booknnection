@@ -2,7 +2,28 @@
 session_start();
 require_once '../models/user.php';
 
-// verificar se é utilizado o metodo post
+// Verifica se é uma requisição GET para o logout ou check_auth
+if (isset($_GET['acao'])) {
+    if ($_GET['acao'] === 'logout') {
+        // Destruir a sessão e redirecionar para a página de login
+        session_unset(); // Limpa todas as variáveis de sessão
+        session_destroy(); // Destrói a sessão
+        header("Location: ../views/pagina_login.php"); // Redireciona para a página de login
+        exit();
+    } elseif ($_GET['acao'] === 'check_auth') {
+        // Verifica a autenticação do usuário
+        if (isset($_SESSION['user_id'])) {
+            $user = new User();
+            $user->loadById($_SESSION['user_id']);
+            header('Location: ../views/pagina_perfil.php?username=' . urlencode($user->getUsername()));
+        } else {
+            header('Location: ../views/pagina_login.php');
+        }
+        exit(); // Para evitar que o resto do código seja executado
+    }
+}
+
+// Verificar se é utilizado o método POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
 
@@ -38,13 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $result = $user->register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade);
             echo $result;
-        }
-    } elseif ($acao === 'check_auth') {
-        if (isset($_SESSION['user_id'])) {
-            $user->loadById($_SESSION['user_id']);
-            header('Location: ../views/pagina_perfil.php?username=' . urlencode($user->getUsername()));
-        } else {
-            header('Location: ../views/pagina_login.html');
         }
     } elseif ($acao === 'adicionar_livro') {
         $titulo = $_POST['titulo'];

@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+// Verifica se o usuário já está autenticado
+if (isset($_SESSION['user_id'])) {
+    // Redireciona o usuário para a página principal, pois já está autenticado
+    header('Location: pagina_principal.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
