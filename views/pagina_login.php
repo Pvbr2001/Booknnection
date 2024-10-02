@@ -113,17 +113,15 @@ if (isset($_SESSION['user_id'])) {
 
 
 <script type="module">
-    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
-  
-    Typebot.initBubble({
-      typebot: "suporte-ao-cliente-squxxd3",
-      apiHost: "http://34.132.245.158:8080",
-      previewMessage: { message: "Está precisando de ajuda?", autoShowDelay: 5000 },
-      theme: {
-        button: { backgroundColor: "#0042DA" },
-        chatWindow: { backgroundColor: "#fff" },
-      },
-    });
-  </script>
+  import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js'
+
+  Typebot.initBubble({
+    typebot: "customer-support-s9a4usx",
+    theme: {
+      button: { backgroundColor: "#0042DA" },
+      chatWindow: { backgroundColor: "#fff" },
+    },
+  });
+</script>
 
   
