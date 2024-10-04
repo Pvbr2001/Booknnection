@@ -18,9 +18,7 @@ if (isset($_SESSION['user_id'])) {
     <title>Booknnection - Login/Cadastro</title>
 </head>
 <body>
-    <header>
-        <!-- Header sem funcionalidade até o momento -->
-    </header>
+    <header></header>
 
     <div class="container-wrapper">
         <!-- Container para Login -->
@@ -62,7 +60,7 @@ if (isset($_SESSION['user_id'])) {
     <script>
         // Função para Mostrar Cadastro
         document.getElementById('showCadastro').addEventListener('click', function(e) {
-            e.preventDefault(); // Impede o comportamento padrão do link
+            e.preventDefault();
 
             const loginContainer = document.querySelector('.login-container');
             const cadastroContainer = document.querySelector('.cadastro-container');
@@ -72,14 +70,13 @@ if (isset($_SESSION['user_id'])) {
             cadastroContainer.classList.remove('hidden');
             cadastroContainer.classList.add('active');
 
-            // Garante que o z-index seja corretamente manipulado
             loginContainer.style.zIndex = 1;
             cadastroContainer.style.zIndex = 2;
         });
 
         // Função para Mostrar Login
         document.getElementById('showLogin').addEventListener('click', function(e) {
-            e.preventDefault(); // Impede o comportamento padrão do link
+            e.preventDefault();
 
             const loginContainer = document.querySelector('.login-container');
             const cadastroContainer = document.querySelector('.cadastro-container');
@@ -89,7 +86,6 @@ if (isset($_SESSION['user_id'])) {
             loginContainer.classList.remove('hidden');
             cadastroContainer.classList.remove('active');
 
-            // Garante que o z-index seja corretamente manipulado
             loginContainer.style.zIndex = 2;
             cadastroContainer.style.zIndex = 1;
         });
@@ -98,18 +94,18 @@ if (isset($_SESSION['user_id'])) {
             const loginContainer = document.querySelector('.login-container');
             const cadastroContainer = document.querySelector('.cadastro-container');
 
-            // Esconde o login e mostra o cadastro
             loginContainer.classList.add('hidden');
             cadastroContainer.classList.remove('hidden');
             cadastroContainer.classList.add('active');
 
-            // Garante que o z-index seja corretamente manipulado
             loginContainer.style.zIndex = 1;
             cadastroContainer.style.zIndex = 2;
         }
     </script>
 </body>
 </html>
+
+
 
 
 <script type="module">
