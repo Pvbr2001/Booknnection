@@ -27,8 +27,14 @@ if (isset($_SESSION['user_id'])) {
             <button class="google-btn">Entrar com Google</button>
             <form id="login-form" method="POST" action="../controllers/user_controller.php">
                 <input type="hidden" name="acao" value="login">
-                <input type="email" name="email" placeholder="E-mail" required>
-                <input type="password" name="senha" placeholder="Senha" required>
+                <div class="floating-label">
+                    <input type="email" name="email" placeholder=" " required>
+                    <label for="email">E-mail</label>
+                </div>
+                <div class="floating-label">
+                    <input type="password" name="senha" placeholder=" " required>
+                    <label for="senha">Senha</label>
+                </div>
                 <button type="submit">Entrar</button>
             </form>
             <p>Não tem uma conta? <a href="#" id="showCadastro">Cadastrar</a></p>
@@ -40,14 +46,35 @@ if (isset($_SESSION['user_id'])) {
             <button class="google-btn">Entrar com Google</button>
             <form id="cadastro-form" method="POST" action="../controllers/user_controller.php">
                 <input type="hidden" name="acao" value="cadastro">
-                <input type="text" name="nome" placeholder="Nome" required>
-                <input type="email" name="email" placeholder="E-mail" required>
-                <input type="password" name="senha" placeholder="Senha" required>
-                <input type="password" name="confirmar_senha" placeholder="Confirme a Senha" required>
-                <input type="text" name="cpf_cnpf" placeholder="CPF/CNPJ" required>
-                <input type="text" name="endereco" placeholder="Endereço" required>
-                <input type="text" name="cidade" placeholder="Cidade" required>
-                <select name="account_type" required>
+                <div class="floating-label">
+                    <input type="text" name="nome" placeholder=" " required>
+                    <label for="nome">Nome</label>
+                </div>
+                <div class="floating-label">
+                    <input type="email" name="email" placeholder=" " required>
+                    <label for="email">E-mail</label>
+                </div>
+                <div class="floating-label">
+                    <input type="password" name="senha" placeholder=" " required>
+                    <label for="senha">Senha</label>
+                </div>
+                <div class="floating-label">
+                    <input type="password" name="confirmar_senha" placeholder=" " required>
+                    <label for="confirmar_senha">Confirme a Senha</label>
+                </div>
+                <div class="floating-label">
+                    <input type="text" name="cpf" placeholder=" " required>
+                    <label for="cpf">CPF</label>
+                </div>
+                <div class="floating-label">
+                    <input type="text" name="endereco" placeholder=" " required>
+                    <label for="endereco">Endereço</label>
+                </div>
+                <div class="floating-label">
+                    <input type="text" name="cidade" placeholder=" " required>
+                    <label for="cidade">Cidade</label>
+                </div>
+                <select name="account_type" class="floating-label" required>
                     <option value="fisica">Pessoa Física</option>
                     <option value="juridica">Pessoa Jurídica</option>
                 </select>
@@ -101,23 +128,36 @@ if (isset($_SESSION['user_id'])) {
             loginContainer.style.zIndex = 1;
             cadastroContainer.style.zIndex = 2;
         }
+
+        // Adiciona a animação de deslocamento do texto para cima do input
+        document.querySelectorAll('.floating-label input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('active');
+            });
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    input.parentElement.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
 
 
 
-
 <script type="module">
-  import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js'
-
-  Typebot.initBubble({
-    typebot: "customer-support-s9a4usx",
-    theme: {
-      button: { backgroundColor: "#0042DA" },
-      chatWindow: { backgroundColor: "#fff" },
-    },
-  });
-</script>
+    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
+  
+    Typebot.initBubble({
+      typebot: "suporte-ao-cliente-squxxd3",
+      apiHost: "http://34.132.245.158:8080",
+      previewMessage: { message: "Está precisando de ajuda?", autoShowDelay: 5000 },
+      theme: {
+        button: { backgroundColor: "#0042DA" },
+        chatWindow: { backgroundColor: "#fff" },
+      },
+    });
+  </script>
 
   

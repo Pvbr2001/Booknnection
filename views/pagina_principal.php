@@ -106,6 +106,7 @@ $posts = $user->exibirPostsPorCidade($cidade);
         </aside>
     </div>
 
+
     <!-- Pop-up -->
     <div id="popup" class="popup-container">
         <div class="popup-content">
@@ -163,7 +164,7 @@ $posts = $user->exibirPostsPorCidade($cidade);
             <p>Opções de Configurações</p>
             <ul>
                 <li><a href="#">Configuração 1</a></li>
-                <li><a href="#">Configuração 2</a></li>
+                <li><a href="../views/pagina_home.html">HOME</a></li>
                 <li><a href="../controllers/User_Controller.php?acao=logout">Logout</a></li>
             </ul>
             <a href="#0" class="customization_popup_close img-replace">X</a>
@@ -257,6 +258,7 @@ $posts = $user->exibirPostsPorCidade($cidade);
     </script>
 </body>
 </html>
+
 <script type="module">
   import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js'
 
