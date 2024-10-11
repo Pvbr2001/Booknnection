@@ -1,17 +1,19 @@
 <?php
 session_start();
 require_once '../models/user.php';
+require_once '../models/post.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../controllers/user_controller.php?acao=check_auth");
     exit();
 }
 
+$post = new Post(); 
 $user = new User();
 $user->loadById($_SESSION['user_id']);
 $livros = $user->exibirLivrosFeed($_SESSION['user_id']);
-$postsSalvos = $user->exibirPostsSalvos($_SESSION['user_id']);
-$postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
+$postsSalvos = $post->exibirPostsSalvos($_SESSION['user_id']);
+$postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 ?>
 
 <!DOCTYPE html>
@@ -24,6 +26,8 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
     <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
     <link rel="stylesheet" href="../public/estilos_css/sidebar.css">
+    <link rel="stylesheet" href="../public/estilos_css/side_popup.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
     <header class="header">
@@ -39,6 +43,9 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
                 <a href="../views/pagina_perfil.php">
                     <img src="../public/imagens/Corgi.png" alt="Ícone de header">
                 </a>
+                <button id="open-side-popup" class="customization_popup_trigger">
+                <span class="material-symbols-outlined">menu</span>
+                </button>
             </div>
         </div>
     </header>
@@ -211,7 +218,21 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
         </div>
     </div>
 
+    <!-- Side Pop-up -->
+    <div class="customization_popup" role="alert">
+        <div class="customization_popup_container">
+            <p>Opções de Configurações</p>
+            <ul>
+                <li><a href="#">Configuração 1</a></li>
+                <li><a href="../views/pagina_home.html">HOME</a></li>
+                <li><a href="../controllers/User_Controller.php?acao=logout">Logout</a></li>
+            </ul>
+            <a href="#0" class="customization_popup_close img-replace">X</a>
+        </div>
+    </div>
+
     <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Função para transição de fade-in
@@ -323,6 +344,25 @@ $postsDoUsuario = $user->exibirPostsDoUsuario($_SESSION['user_id']);
             document.getElementById('feed-btn').addEventListener('click', showFeed);
             document.getElementById('books-btn').addEventListener('click', showBooks);
             document.getElementById('saved-posts-btn').addEventListener('click', showSavedPosts);
+        });
+
+        // JavaScript para o side pop-up
+        jQuery(document).ready(function($) {
+            $('.customization_popup_trigger').on('click', function(event) {
+                event.preventDefault();
+                $('.customization_popup').addClass('is-visible');
+            });
+            $('.customization_popup').on('click', function(event) {
+                if ($(event.target).is('.customization_popup_close') || $(event.target).is('.customization_popup')) {
+                    event.preventDefault();
+                    $(this).removeClass('is-visible');
+                }
+            });
+            $(document).keyup(function(event) {
+                if (event.which == '27') {
+                    $('.customization_popup').removeClass('is-visible');
+                }
+            });
         });
     </script>
 </body>

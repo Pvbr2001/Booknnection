@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../models/user.php';
+require_once '../models/Post.php'; // Include the post.php file
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../controllers/user_controller.php?acao=check_auth");
@@ -10,7 +11,9 @@ if (!isset($_SESSION['user_id'])) {
 $user = new User();
 $user->loadById($_SESSION['user_id']);
 $cidade = $user->getCidade();
-$posts = $user->exibirPostsPorCidade($cidade);
+
+$post = new Post(); // Create an instance of the Post class
+$posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch posts
 ?>
 
 <!DOCTYPE html>
@@ -24,6 +27,8 @@ $posts = $user->exibirPostsPorCidade($cidade);
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
     <link rel="stylesheet" href="../public/estilos_css/sidebar.css">
     <link rel="stylesheet" href="../public/estilos_css/side_popup.css">
+    <link rel="stylesheet" href="../public/estilos_css/pending.css">
+    <link rel="stylesheet" href="../public/estilos_css/popup_troca.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
@@ -79,6 +84,11 @@ $posts = $user->exibirPostsPorCidade($cidade);
                     echo "<input type='hidden' name='acao' value='curtir_post'>";
                     echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
                     echo "<button type='submit'>Curtir (" . $post['curtidas'] . ")</button>";
+                    echo "</form>";
+                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;' id='swap-book-form'>";
+                    echo "<input type='hidden' name='acao' value='trocar_livro'>";
+                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
+                    echo "<button type='button' id='swap-book-btn' class='swap-book-btn' data-image='" . htmlspecialchars($post['caminho_capa']) . "'>Trocar Livro</button>";
                     echo "</form>";
                     echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
                     echo "<input type='hidden' name='acao' value='salvar_post'>";
@@ -171,6 +181,26 @@ $posts = $user->exibirPostsPorCidade($cidade);
         </div>
     </div>
 
+    <!-- Pop-up para troca de livro -->
+    <div id="swap-book-popup" class="popup-container pending-popup">
+        <div class="popup-content">
+            <span id="close-swap-book-popup" class="popup-close">&times;</span>
+            <h2>Trocar Livro</h2>
+            <form action="../controllers/post_actions.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="acao" value="trocar_livro">
+                <input type="hidden" name="id_post" id="id_post" value="">
+                <div class="post-info">
+                    <img src="<?php echo $post['caminho_capa']; ?>" alt="Capa do Livro" id="imagem_post">
+                    <h1>Usuário atual: <?php echo $user->getNome(); ?> </h1>
+                    <h1>Dono do post: <?php echo "ainda nao consegui resolver"?> </h1>
+                </div>
+                <label for="livro_para_trocar">Livro para Trocar:</label>
+                <input type="text" name="livro_para_trocar" id="livro_para_trocar" required>
+                <button type="submit" class="green-button">Confirmar</button>
+            </form>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -208,6 +238,10 @@ $posts = $user->exibirPostsPorCidade($cidade);
             const feed = document.querySelector('.feed');
             slideUp(feed, 1.5);
 
+            // Aplicar a transição de baixo para cima ao pop-up de troca de livro
+            const swapBookPopup = document.getElementById("swap-book-popup");
+            slideUp(swapBookPopup, 1.5);
+
             // Abrir e fechar o pop-up
             const popup = document.getElementById("popup");
             const addBookBtn = document.getElementById("add-book-btn");
@@ -235,6 +269,36 @@ $posts = $user->exibirPostsPorCidade($cidade);
                 popup.classList.remove("open-popup");
                 mainContent.classList.remove("darken");
             }
+
+            // Abrir e fechar o pop-up de troca de livro
+            const swapBookBtns = document.querySelectorAll('.swap-book-btn');
+            const closeSwapBookPopup = document.getElementById("close-swap-book-popup");
+
+            swapBookBtns.forEach(function(btn) {
+                btn.onclick = function() {
+                    const idPost = this.parentNode.querySelector('input[name="id_post"]').value;
+                    const imageUrl = this.getAttribute('data-image');
+                    document.getElementById("id_post").value = idPost;
+                    document.getElementById("imagem_post").src = imageUrl;
+                    swapBookPopup.classList.add("open-popup");
+                    mainContent.classList.add("darken");
+                }
+            });
+
+            closeSwapBookPopup.onclick = function() {
+                closeSwapBookPopupFunction();
+            }
+
+            window.onclick = function(event) {
+                if (event.target == swapBookPopup) {
+                    closeSwapBookPopupFunction();
+                }
+            }
+
+            function closeSwapBookPopupFunction() {
+                swapBookPopup.classList.remove("open-popup");
+                mainContent.classList.remove("darken");
+            }
         });
 
         // JavaScript para o side pop-up
@@ -258,6 +322,7 @@ $posts = $user->exibirPostsPorCidade($cidade);
     </script>
 </body>
 </html>
+
 
 <script type="module">
   import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js'

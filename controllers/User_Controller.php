@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../models/user.php';
+require_once '../models/post.php';
 
 // Verifica se é uma requisição GET para o logout ou check_auth
 if (isset($_GET['acao'])) {
@@ -71,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $caminhoCapa = null;
         if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
             $extensao = pathinfo($_FILES['capa']['name'], PATHINFO_EXTENSION);
-            $caminhoCapa = '../public/imagens/' . uniqid().rand(0, 100000) . '.' . $extensao; // 
+            $caminhoCapa = '../public/imagens/' . uniqid().rand(0, 100000) . '.' . $extensao;
             move_uploaded_file($_FILES['capa']['tmp_name'], $caminhoCapa);
         }
 
@@ -90,16 +91,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<script>alert('Livro adicionado com sucesso');</script>";
         }
     } elseif ($acao === 'criar_post') {
+        if (!class_exists('Post')) {
+            die("Classe Post não encontrada!");
+        }
+
+        $post = new Post();
         $id_usuario = $_SESSION['user_id'];
         $id_livro = $_POST['id_livro'];
         $titulo = $_POST['titulo'];
         $descricao = $_POST['descricao'];
         $cidade = $_POST['cidade'];
 
-        if ($user->criarPost($id_usuario, $id_livro, $titulo, $descricao, $cidade)) {
+        if ($post->criarPost($id_usuario, $id_livro, $titulo, $descricao, $cidade)) {
             echo "<script>alert('Post criado com sucesso');</script>";
         } else {
             echo "<script>alert('Erro ao criar post');</script>";
+        }
+    } elseif ($acao === 'curtir_post') {
+        if (!class_exists('Post')) {
+            die("Classe Post não encontrada!");
+        }
+
+        $post = new Post();
+        $id_post = $_POST['id_post'];
+
+        if ($post->curtirPost($id_post)) {
+            echo "<script>alert('Post curtido com sucesso');</script>";
+        } else {
+            echo "<script>alert('Erro ao curtir o post');</script>";
+        }
+    } elseif ($acao === 'salvar_post') {
+        if (!class_exists('Post')) {
+            die("Classe Post não encontrada!");
+        }
+
+        $post = new Post();
+        $id_usuario = $_SESSION['user_id'];
+        $id_post = $_POST['id_post'];
+
+        if ($post->salvarPost($id_usuario, $id_post)) {
+            echo "<script>alert('Post salvo com sucesso');</script>";
+        } else {
+            echo "<script>alert('Erro ao salvar o post');</script>";
         }
     } else {
         echo 'InvalidAction';
@@ -107,4 +140,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo 'InvalidRequestMethod';
 }
-?>
