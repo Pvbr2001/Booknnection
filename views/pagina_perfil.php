@@ -1,19 +1,19 @@
 <?php
 session_start();
-require_once '../models/user.php';
-require_once '../models/post.php';
+//require_once '../models/user.php';
+//require_once '../models/post.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../controllers/user_controller.php?acao=check_auth");
-    exit();
-}
+//if (!isset($_SESSION['user_id'])) {
+//    header("Location: ../controllers/user_controller.php?acao=check_auth");
+//    exit();
+//}
 
-$post = new Post(); 
-$user = new User();
-$user->loadById($_SESSION['user_id']);
-$livros = $user->exibirLivrosFeed($_SESSION['user_id']);
-$postsSalvos = $post->exibirPostsSalvos($_SESSION['user_id']);
-$postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
+//$post = new Post(); 
+//$user = new User();
+//$user->loadById($_SESSION['user_id']);
+//$livros = $user->exibirLivrosFeed($_SESSION['user_id']);
+//$postsSalvos = $post->exibirPostsSalvos($_SESSION['user_id']);
+//$postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 ?>
 
 <!DOCTYPE html>

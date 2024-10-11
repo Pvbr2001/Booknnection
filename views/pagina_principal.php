@@ -1,19 +1,19 @@
 <?php
 session_start();
-require_once '../models/user.php';
-require_once '../models/Post.php'; // Include the post.php file
+//require_once '../models/user.php';
+//require_once '../models/Post.php'; // Include the post.php file
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../controllers/user_controller.php?acao=check_auth");
-    exit();
-}
+//if (!isset($_SESSION['user_id'])) {
+//    header("Location: ../controllers/user_controller.php?acao=check_auth");
+//    exit();
+//}
 
-$user = new User();
-$user->loadById($_SESSION['user_id']);
-$cidade = $user->getCidade();
+//$user = new User();
+//$user->loadById($_SESSION['user_id']);
+//$cidade = $user->getCidade();
 
-$post = new Post(); // Create an instance of the Post class
-$posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch posts
+//$post = new Post(); // Create an instance of the Post class
+//$posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch posts
 ?>
 
 <!DOCTYPE html>
