@@ -38,10 +38,19 @@ CREATE TABLE posts (
     id_livro INT NOT NULL,
     titulo VARCHAR(255) NOT NULL,
     descricao TEXT NOT NULL,
-    curtidas INT DEFAULT 0,
     cidade VARCHAR(100) NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id),
     FOREIGN KEY (id_livro) REFERENCES livros(id)
+);
+
+CREATE TABLE curtidas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_post INT NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    FOREIGN KEY (id_post) REFERENCES posts(id),
+    UNIQUE (id_usuario, id_post) 
 );
 
 CREATE TABLE posts_salvos (
@@ -55,3 +64,27 @@ CREATE TABLE posts_salvos (
 ALTER USER 'root'@'localhost' IDENTIFIED BY '81631240';
 FLUSH PRIVILEGES;
 
+CREATE OR REPLACE VIEW vw_posts AS
+SELECT 
+    p.id AS id,
+    p.id_livro AS id_livro,
+    p.id_usuario AS id_usuario,
+    p.titulo AS post_titulo,
+    p.descricao AS descricao,
+    l.caminho_capa AS caminho_capa,
+    l.titulo AS titulo,
+    l.autor AS autor,
+    l.isbn AS isbn,
+    l.capa_tipo AS capa_tipo,
+    l.ano_lancamento AS ano_lancamento,
+    u.nome AS nome,
+    u.email AS email,
+    u.cpf_cnpf AS cpf_cnpf,
+    u.endereco AS endereco,
+    p.cidade AS cidade
+FROM
+    posts p
+JOIN 
+    usuario u ON p.id_usuario = u.id
+JOIN 
+    livros l ON p.id_livro = l.id;

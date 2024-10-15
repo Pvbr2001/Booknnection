@@ -13,8 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($acao === 'curtir_post') {
         $id_post = $_POST['id_post'];
+        $id_user = $_SESSION['user_id']; // Obtendo o id do usuário logado
 
-        if ($post->curtirPost($id_post)) {
+        if ($post->curtirPost($id_post, $id_user)) {
             echo "<script>alert('Post curtido com sucesso'); window.location.href = document.referrer;</script>";
         } else {
             echo "<script>alert('Erro ao curtir post'); window.location.href = document.referrer;</script>";

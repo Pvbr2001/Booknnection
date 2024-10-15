@@ -27,11 +27,9 @@ class Post {
 
     // Function to display posts based on the user's city
     public function exibirPostsPorCidade($cidade) {
-        $sql = "SELECT p.id, p.titulo, p.descricao, p.curtidas, l.caminho_capa
-                FROM posts p
-                JOIN usuario u ON p.id_usuario = u.id
-                JOIN livros l ON p.id_livro = l.id
-                WHERE u.cidade = ?";
+        $sql = "SELECT *
+                FROM vw_posts
+                WHERE cidade = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('s', $cidade);
         $stmt->execute();
@@ -45,24 +43,58 @@ class Post {
     }
 
     // Function to like a post
-    public function curtirPost($id_post) {
-        $sql = "UPDATE posts SET curtidas = curtidas + 1 WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param('i', $id_post);
-        return $stmt->execute();
+    public function curtirPost($id_post, $id_usuario) {
+        // Verifica se o usuário já curtiu o post
+        $sqlCheck = "SELECT * FROM curtidas WHERE id_usuario = ? AND id_post = ?";
+        $stmtCheck = $this->conn->prepare($sqlCheck);
+        $stmtCheck->bind_param('ii', $id_usuario, $id_post);
+        $stmtCheck->execute();
+        $resultCheck = $stmtCheck->get_result();
+    
+        if ($resultCheck->num_rows > 0) {
+            // Se já curtiu, remover curtida
+            $sqlDelete = "DELETE FROM curtidas WHERE id_usuario = ? AND id_post = ?";
+            $stmtDelete = $this->conn->prepare($sqlDelete);
+            $stmtDelete->bind_param('ii', $id_usuario, $id_post);
+            return $stmtDelete->execute();
+        } else {
+            // Se não curtiu, adicionar curtida
+            $sqlInsert = "INSERT INTO curtidas (id_usuario, id_post) VALUES (?, ?)";
+            $stmtInsert = $this->conn->prepare($sqlInsert);
+            $stmtInsert->bind_param('ii', $id_usuario, $id_post);
+            return $stmtInsert->execute();
+        }
     }
+    
+    
 
     // Function to save a post
     public function salvarPost($id_usuario, $id_post) {
-        $sql = "INSERT INTO posts_salvos (id_usuario, id_post) VALUES (?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param('ii', $id_usuario, $id_post);
-        return $stmt->execute();
+        // Verifica se o usuário já salvou o post
+        $sqlCheck = "SELECT * FROM posts_salvos WHERE id_usuario = ? AND id_post = ?";
+        $stmtCheck = $this->conn->prepare($sqlCheck);
+        $stmtCheck->bind_param('ii', $id_usuario, $id_post);
+        $stmtCheck->execute();
+        $resultCheck = $stmtCheck->get_result();
+    
+        if ($resultCheck->num_rows > 0) {
+            // Se já salvou, remover o post salvo
+            $sqlDelete = "DELETE FROM posts_salvos WHERE id_usuario = ? AND id_post = ?";
+            $stmtDelete = $this->conn->prepare($sqlDelete);
+            $stmtDelete->bind_param('ii', $id_usuario, $id_post);
+            return $stmtDelete->execute();
+        } else {
+            // Se não salvou, adicionar o post aos salvos
+            $sqlInsert = "INSERT INTO posts_salvos (id_usuario, id_post) VALUES (?, ?)";
+            $stmtInsert = $this->conn->prepare($sqlInsert);
+            $stmtInsert->bind_param('ii', $id_usuario, $id_post);
+            return $stmtInsert->execute();
+        }
     }
 
     // Function to display saved posts of the user
     public function exibirPostsSalvos($id_usuario) {
-        $sql = "SELECT p.id, p.titulo, p.descricao, p.curtidas, l.caminho_capa
+        $sql = "SELECT p.id, p.titulo, p.descricao, l.caminho_capa
                 FROM posts_salvos ps
                 JOIN posts p ON ps.id_post = p.id
                 JOIN livros l ON p.id_livro = l.id
@@ -81,7 +113,7 @@ class Post {
 
     // Function to display all posts created by the user
     public function exibirPostsDoUsuario($id_usuario) {
-        $sql = "SELECT p.id, p.titulo, p.descricao, p.curtidas, l.caminho_capa
+        $sql = "SELECT p.id, p.titulo, p.descricao, l.caminho_capa
                 FROM posts p
                 JOIN livros l ON p.id_livro = l.id
                 WHERE p.id_usuario = ?";

@@ -32,3 +32,5 @@ https://codesandbox.io/p/sandbox/feed-instagram-html-css-i5urj?file=%2Findex.htm
 
 APi ViaCep para localidade
 
+utilizar views no bd
+

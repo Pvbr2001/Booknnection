@@ -1,19 +1,25 @@
 <?php
 session_start();
 require_once '../models/user.php';
-require_once '../models/Post.php'; // Include the post.php file
+require_once '../models/Post.php'; 
+require_once '../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../controllers/user_controller.php?acao=check_auth");
     exit();
 }
+$database = new Database();
+$conn = $database->getConnection(); // Método para obter a conexão
+
 
 $user = new User();
 $user->loadById($_SESSION['user_id']);
 $cidade = $user->getCidade();
 
-$post = new Post(); // Create an instance of the Post class
-$posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch posts
+$post = new Post(); 
+$posts = $post->exibirPostsPorCidade($cidade);
+//var_dump($posts);
+//exit();
 ?>
 
 <!DOCTYPE html>
@@ -76,20 +82,33 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
             <div class="feed">
                 <?php
                 foreach ($posts as $post) {
+                    // Contar o número de curtidas para cada post
+                    $sqlCurtidas = "SELECT COUNT(*) as totalCurtidas FROM curtidas WHERE id_post = ?";
+                    $stmtCurtidas = $conn->prepare($sqlCurtidas);
+                    $stmtCurtidas->bind_param("i", $post['id']);
+                    $stmtCurtidas->execute();
+                    $resultCurtidas = $stmtCurtidas->get_result();
+                    $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
+
                     echo "<div class='post'>";
                     echo "<h2>" . htmlspecialchars($post['titulo']) . "</h2>";
                     echo "<p>" . htmlspecialchars($post['descricao']) . "</p>";
                     echo "<img src='" . htmlspecialchars($post['caminho_capa']) . "' alt='Capa do Livro'>";
+                    
+                    // Botão de curtir com contador dinâmico
                     echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
                     echo "<input type='hidden' name='acao' value='curtir_post'>";
                     echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='submit'>Curtir (" . $post['curtidas'] . ")</button>";
+                    echo "<button type='submit'>Curtir (" . $curtidas . ")</button>";
                     echo "</form>";
+                    
+                    // Outras ações (trocar livro, salvar post)
                     echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;' id='swap-book-form'>";
                     echo "<input type='hidden' name='acao' value='trocar_livro'>";
                     echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
                     echo "<button type='button' id='swap-book-btn' class='swap-book-btn' data-image='" . htmlspecialchars($post['caminho_capa']) . "'>Trocar Livro</button>";
                     echo "</form>";
+
                     echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
                     echo "<input type='hidden' name='acao' value='salvar_post'>";
                     echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
@@ -180,7 +199,7 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
             <a href="#0" class="customization_popup_close img-replace">X</a>
         </div>
     </div>
-
+    <?php if (is_array($post)) {?>
     <!-- Pop-up para troca de livro -->
     <div id="swap-book-popup" class="popup-container pending-popup">
         <div class="popup-content">
@@ -192,7 +211,7 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
                 <div class="post-info">
                     <img src="<?php echo $post['caminho_capa']; ?>" alt="Capa do Livro" id="imagem_post">
                     <h1>Usuário atual: <?php echo $user->getNome(); ?> </h1>
-                    <h1>Dono do post: <?php echo "ainda nao consegui resolver"?> </h1>
+                    <h1>Dono do post: <?php echo $post['nome'];?> </h1>
                 </div>
                 <label for="livro_para_trocar">Livro para Trocar:</label>
                 <input type="text" name="livro_para_trocar" id="livro_para_trocar" required>
@@ -200,6 +219,8 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
             </form>
         </div>
     </div>
+
+    <?php } ?>
 
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -242,13 +263,13 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
             const swapBookPopup = document.getElementById("swap-book-popup");
             slideUp(swapBookPopup, 1.5);
 
-            // Abrir e fechar o pop-up
+             //abrir e fechar o pop up
             const popup = document.getElementById("popup");
             const addBookBtn = document.getElementById("add-book-btn");
             const closePopup = document.getElementById("close-popup");
             const mainContent = document.querySelector('.main-container');
 
-            // Função para abrir o pop-up com animação
+            //função para abrir o pop-up com animação
             addBookBtn.onclick = function() {
                 popup.classList.add("open-popup");
                 mainContent.classList.add("darken");
