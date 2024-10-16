@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $post = new Post();
         $id_post = $_POST['id_post'];
 
-        if ($post->curtirPost($id_post)) {
+        if ($post->curtirPost($id_post,$id_usuario)) {
             echo "<script>alert('Post curtido com sucesso');</script>";
         } else {
             echo "<script>alert('Erro ao curtir o post');</script>";
