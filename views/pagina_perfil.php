@@ -11,6 +11,14 @@ if (!isset($_SESSION['user_id'])) {
 $database = new Database();
 $conn = $database->getConnection(); // Método para obter a conexão
 
+require_once '../models/user.php';
+require_once '../models/post.php';
+
+if (!isset($_SESSION['user_id'])) {
+   header("Location: ../controllers/user_controller.php?acao=check_auth");
+   exit();
+}
+
 $post = new Post(); 
 $user = new User();
 $user->loadById($_SESSION['user_id']);
