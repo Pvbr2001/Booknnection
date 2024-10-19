@@ -1,12 +1,13 @@
 Vamos fazer logo esse projeto da certo.
 
+* criar icone de notificaçao e campo para eles
+* manual html no side popu up
 * variavel de sessao para troca de livros 
 * clausula "in" no banco de dados para troca de livros
 * conexao com whatssap para chat
 * nao poder criar dois posts do mesmo livro do usuario
 * caso de excessao caso a conecçao com banco nao funcionar
-* manual html no side popu up, com falhas e indicaçoes de uso
-* criar icone de notificaçao e campo para eles
+
 
 
 
