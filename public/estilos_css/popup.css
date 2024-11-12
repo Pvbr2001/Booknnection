@@ -34,8 +34,8 @@
 }
 
 .open-popup {
-    display: block;
-}   
+    display: block;   
+}
 
 .darken {
     filter: brightness(50%);

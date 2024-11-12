@@ -95,21 +95,3 @@
     background-color: #2980b9;
 }
 
-/* Feed de postagens */
-.feed {
-    margin-top: 20px;
-    overflow: hidden; /* Impede rolagem */
-    min-height: 400px; /* Altura mínima para garantir a barra de rolagem */
-}
-
-.feed-principal {
-    flex: 2;
-    margin: 0 20px;
-    overflow: hidden; /* Impede rolagem */
-}
-
-.post img {
-    max-width: 100%; /* Garante que a imagem não ultrapasse a largura do contêiner */
-    height: auto;    /* Mantém a proporção da imagem */
-    display: block;  /* Remove espaço em branco abaixo da imagem */
-}

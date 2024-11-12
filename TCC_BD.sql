@@ -61,6 +61,27 @@ CREATE TABLE posts_salvos (
     FOREIGN KEY (id_post) REFERENCES posts(id)
 );
 
+CREATE TABLE notificacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL, -- Usuário que receberá a notificação
+    tipo ENUM('curtida', 'salvo', 'troca') NOT NULL, -- Tipo de notificação
+    id_post INT NOT NULL, -- Post relacionado à notificação
+    lida BOOLEAN DEFAULT FALSE, -- Status de leitura
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de criação
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    FOREIGN KEY (id_post) REFERENCES posts(id)
+);
+
+CREATE OR REPLACE VIEW vw_notificacoes AS
+SELECT 
+    u.id AS id_usuario_envio, 
+    p.id_usuario AS id_usuario_dono_post, 
+    p.id AS id_post
+FROM 
+    posts p
+JOIN 
+    usuario u ON p.id_usuario = u.id;
+
 create table pedding(
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario2 int not null,
@@ -103,3 +124,5 @@ JOIN
     usuario u ON p.id_usuario = u.id
 JOIN 
     livros l ON p.id_livro = l.id;
+    
+ 

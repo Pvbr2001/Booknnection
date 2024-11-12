@@ -95,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+
+
         // JavaScript para o side pop-up
         jQuery(document).ready(function($) {
             $('.customization_popup_trigger').on('click', function(event) {
@@ -179,3 +181,62 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('books-btn').addEventListener('click', showBooks);
             document.getElementById('saved-posts-btn').addEventListener('click', showSavedPosts);
         });
+
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Função para abrir o pop-up de criação de post
+            const addBookBtn = document.getElementById("add-book-btn");
+            const popup = document.getElementById("popup");
+            const mainContent = document.querySelector('.main-container');
+            const closePopup = document.getElementById("close-popup");
+        
+            // Função para abrir o pop-up
+            addBookBtn.onclick = function() {
+                popup.classList.add("open-popup");
+                mainContent.classList.add("darken");
+            }
+        
+            // Fechar o pop-up
+            closePopup.onclick = function() {
+                closePopupFunction();
+            }
+        
+            // Função para fechar o pop-up
+            function closePopupFunction() {
+                popup.classList.remove("open-popup");
+                mainContent.classList.remove("darken");
+            }
+        
+            // Fechar o pop-up ao clicar fora dele
+            window.onclick = function(event) {
+                if (event.target === popup) {
+                    closePopupFunction();
+                }
+            }
+        
+            // Funções para navegar entre feed, lista de livros e posts salvos
+            function showFeed() {
+                document.getElementById('feed').style.display = 'block';
+                document.getElementById('books').style.display = 'none';
+                document.getElementById('saved-posts').style.display = 'none';
+            }
+        
+            function showBooks() {
+                document.getElementById('feed').style.display = 'none';
+                document.getElementById('books').style.display = 'block';
+                document.getElementById('saved-posts').style.display = 'none';
+            }
+        
+            function showSavedPosts() {
+                document.getElementById('feed').style.display = 'none';
+                document.getElementById('books').style.display = 'none';
+                document.getElementById('saved-posts').style.display = 'block';
+            }
+        
+            document.getElementById('feed-btn').addEventListener('click', showFeed);
+            document.getElementById('books-btn').addEventListener('click', showBooks);
+            document.getElementById('saved-posts-btn').addEventListener('click', showSavedPosts);
+        });
+        

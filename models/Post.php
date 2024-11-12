@@ -129,19 +129,24 @@ class Post {
         return $posts;
     }
 
-    // Function to get the name of the post owner
-    public function getNomeDonoPost($id_post) {
-        $sql = "SELECT u.nome FROM posts p JOIN usuario u ON p.id_usuario = u.id WHERE p.id = ?";
+    public function getNome($id_post) {
+        // Query the database to retrieve the post owner's name
+        $sql = "SELECT nome FROM usuario WHERE id = (SELECT id_usuario FROM posts WHERE id = ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param('i', $id_post);
+        $stmt->bind_param("i", $id_post);
         $stmt->execute();
         $result = $stmt->get_result();
+        $nome = $result->fetch_assoc()['nome'];
+        return $nome;
+    }
 
-        $nomeDonoPost = '';
-        if ($row = $result->fetch_assoc()) {
-            $nomeDonoPost = $row['nome'];
-        }
-
-        return $nomeDonoPost;
+    public function getTitulo($id_post) {
+        $sql = "SELECT titulo FROM posts WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id_post);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $titulo = $result->fetch_assoc()['titulo'];
+        return $titulo;
     }
 }

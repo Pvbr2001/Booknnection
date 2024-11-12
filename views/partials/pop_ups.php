@@ -1,3 +1,4 @@
+<!--popup de adicionar livro-->
 <div id="popup" class="popup-container">
         <div class="popup-content">
             <span id="close-popup" class="popup-close">&times;</span>
@@ -28,6 +29,8 @@
         </div>
     </div>
 
+
+
     <!-- Pop-up para criar post -->
     <div id="create-post-popup" class="popup-container">
         <div class="popup-content">
@@ -48,6 +51,8 @@
         </div>
     </div>
 
+
+
     <!-- Side Pop-up -->
     <div class="customization_popup" role="alert">
         <div class="customization_popup_container">
@@ -60,7 +65,10 @@
             <a href="#0" class="customization_popup_close img-replace">X</a>
         </div>
     </div>
-    <?php if (is_array($post)) {?>
+
+
+
+    <?php if (is_array($post)) {?>  
     <!-- Pop-up para troca de livro -->
     <div id="swap-book-popup" class="popup-container pending-popup">
         <div class="popup-content">
@@ -80,5 +88,4 @@
             </form>
         </div>
     </div>
-
     <?php } ?>

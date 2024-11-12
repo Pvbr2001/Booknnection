@@ -27,24 +27,28 @@ class User {
 
     // Function to register a user, encrypting personal data such as password and CPF
     public function register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade) {
-        if ($this->userExists($email)) {
-            return 'UserExists';
-        }
-
-        $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-        $cpfCnpjCriptografado = openssl_encrypt($cpf_cnpf, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-
-        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco, cidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param('sssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade);
-
-        if ($stmt->execute()) {
-            return 'Success';
-        } else {
-            return 'RegistrationFailed';
-        }
+    if ($this->userExists($email)) {
+        return 'UserExists';
     }
 
+    // Generate a salt for CPF/CNPJ to avoid duplicates
+    $salt = bin2hex(random_bytes(16)); // 16-byte salt
+    $cpfCnpjCriptografado = openssl_encrypt($cpf_cnpf . $salt, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
+
+    // Encrypt password
+    $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
+
+    // Insert into database
+    $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco, cidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param('sssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade);
+
+    if ($stmt->execute()) {
+        return 'Success';
+    } else {
+        return 'RegistrationFailed';
+    }
+}
     // Function to check if the user already exists in the database
     public function userExists($email) {
         $sql = "SELECT id FROM usuario WHERE email = ?";
@@ -180,20 +184,6 @@ class User {
                 WHERE lista_livros.id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('i', $id_usuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        $livros = [];
-        while ($row = $result->fetch_assoc()) {
-            $livros[] = $row;
-        }
-        return $livros;
-    }
-
-    // Function to display all books
-    public function exibirTodosLivros() {
-        $sql = "SELECT titulo, autor, caminho_capa FROM livros";
-        $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->get_result();
 
