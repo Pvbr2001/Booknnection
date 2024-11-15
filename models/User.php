@@ -25,31 +25,32 @@ class User {
         $this->chave = getenv('CHAVE_CRIPTOGRAFIA');
     }
 
-    // Function to register a user, encrypting personal data such as password and CPF
+    // Função para registrar um usuário, criptografando dados pessoais como senha e CPF
     public function register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade) {
-    if ($this->userExists($email)) {
-        return 'UserExists';
+        if ($this->userExists($email)) {
+            return 'UserExists';
+        }
+
+        // Gerar um salt para CPF/CNPJ para evitar duplicatas
+        $salt = bin2hex(random_bytes(16)); // Salt de 16 bytes
+        $cpfCnpjCriptografado = openssl_encrypt($cpf_cnpf . $salt, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
+
+        // Criptografar senha
+        $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
+
+        // Inserir no banco de dados
+        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco, cidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('sssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade);
+
+        if ($stmt->execute()) {
+            return 'Success';
+        } else {
+            return 'RegistrationFailed';
+        }
     }
 
-    // Generate a salt for CPF/CNPJ to avoid duplicates
-    $salt = bin2hex(random_bytes(16)); // 16-byte salt
-    $cpfCnpjCriptografado = openssl_encrypt($cpf_cnpf . $salt, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-
-    // Encrypt password
-    $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-
-    // Insert into database
-    $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco, cidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param('sssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade);
-
-    if ($stmt->execute()) {
-        return 'Success';
-    } else {
-        return 'RegistrationFailed';
-    }
-}
-    // Function to check if the user already exists in the database
+    // Função para verificar se o usuário já existe no banco de dados
     public function userExists($email) {
         $sql = "SELECT id FROM usuario WHERE email = ?";
         $stmt = $this->conn->prepare($sql);
@@ -60,7 +61,7 @@ class User {
         return $stmt->num_rows > 0;
     }
 
-    // Function to login, decrypting the password
+    // Função para login, descriptografando a senha
     public function login($email, $senha) {
         $sql = "SELECT id, senha, nome, email, account_type, cpf_cnpf, endereco, cidade FROM usuario WHERE email = ?";
         $stmt = $this->conn->prepare($sql);
@@ -92,7 +93,7 @@ class User {
         return false;
     }
 
-    // Function to load user information by ID
+    // Função para carregar informações do usuário por ID
     public function loadById($id) {
         $sql = "SELECT id, nome, email, account_type, cpf_cnpf, endereco, cidade FROM usuario WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
@@ -115,7 +116,7 @@ class User {
         }
     }
 
-    // Methods to get user information
+    // Métodos para obter informações do usuário
     public function getId() {
         return $this->id;
     }
@@ -141,16 +142,14 @@ class User {
     }
 
     public function getCidade() {
-        // retrieve the city from the database or wherever it's stored
-        $cidade = $this->cidade; // or $this->getCidadeFromDatabase();
-        return $cidade;
+        return $this->cidade;
     }
 
     public function getAccountType() {
         return $this->account_type;
     }
 
-    // Function to check if the ISBN is already registered
+    // Função para verificar se o ISBN já está registrado
     public function verificarISBN($isbn) {
         $sql = "SELECT id FROM livros WHERE isbn = ?";
         $stmt = $this->conn->prepare($sql);
@@ -160,16 +159,16 @@ class User {
         return $stmt->num_rows > 0;
     }
 
-    // Function to add a book
+    // Função para adicionar um livro
     public function adicionarLivro($titulo, $autor, $isbn, $capa_tipo, $ano_lancamento, $caminhoCapa) {
         $sql = "INSERT INTO livros (titulo, autor, isbn, capa_tipo, ano_lancamento, caminho_capa) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('ssssss', $titulo, $autor, $isbn, $capa_tipo, $ano_lancamento, $caminhoCapa);
         $stmt->execute();
-        return $this->conn->insert_id;  // Return the ID of the inserted book
+        return $this->conn->insert_id;
     }
 
-    // Function to add the book to the user's list
+    // Função para adicionar o livro à lista do usuário
     public function adicionarLivroLista($user_id, $livro_id) {
         $sql = "INSERT INTO lista_livros (id_usuario, id_livro) VALUES (?, ?)";
         $stmt = $this->conn->prepare($sql);
@@ -177,7 +176,7 @@ class User {
         return $stmt->execute();
     }
 
-    // Function to display the saved books in the user's feed
+    // Função para exibir os livros salvos no feed do usuário
     public function exibirLivrosFeed($id_usuario) {
         $sql = "SELECT livros.id, livros.titulo, livros.autor, livros.caminho_capa FROM livros
                 INNER JOIN lista_livros ON livros.id = lista_livros.id_livro
@@ -194,3 +193,4 @@ class User {
         return $livros;
     }
 }
+

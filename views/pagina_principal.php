@@ -1,39 +1,28 @@
 <?php
 session_start();
 
+// Required files
 require_once '../models/user.php';
 require_once '../models/Post.php'; 
 require_once '../config/database.php';
 
+// Redirect to authentication check if user is not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../controllers/user_controller.php?acao=check_auth");
     exit();
 }
+
+// Database connection
 $database = new Database();
-$conn = $database->getConnection(); // Método para obter a conexão
+$conn = $database->getConnection(); // Obtain the database connection
 
-
-require_once '../models/user.php';
-require_once '../models/Post.php'; // Include the post.php file
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../controllers/user_controller.php?acao=check_auth");
-    exit();
-}
-
-
+// Load user and fetch posts by user's city
 $user = new User();
 $user->loadById($_SESSION['user_id']);
 $cidade = $user->getCidade();
 
 $post = new Post(); 
 $posts = $post->exibirPostsPorCidade($cidade);
-//var_dump($posts);
-//exit();
-
-$post = new Post(); // Create an instance of the Post class
-$posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch posts
-
 ?>
 
 <!DOCTYPE html>
@@ -42,6 +31,7 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booknnection - Feed</title>
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../public/estilos_css/header.css">
     <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
@@ -57,65 +47,66 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
 
     <!-- Main container -->
     <div class="main-container">
-        <!-- Sidebar esquerda -->
+        <!-- Left Sidebar -->
         <?php include '../views/partials/sidebar_left.php'; ?>
 
-        <!-- Seção principal -->
+        <!-- Main section -->
         <main class="profile-content">
-            <!-- Seção de postagens -->
+            <!-- Post section -->
             <div class="feed">
-                <?php
-                foreach ($posts as $post) {
-                    // Código para exibir o post caso ele exista
+                <?php foreach ($posts as $post): ?>
+                    <?php
+                    // Query to count likes for each post
                     $sqlCurtidas = "SELECT COUNT(*) as totalCurtidas FROM curtidas WHERE id_post = ?";
                     $stmtCurtidas = $conn->prepare($sqlCurtidas);
                     $stmtCurtidas->bind_param("i", $post['id']);
                     $stmtCurtidas->execute();
                     $resultCurtidas = $stmtCurtidas->get_result();
                     $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
-                
-                    echo "<div class='post'>";
-                    echo "<h2>" . htmlspecialchars($post['titulo']) . "</h2>";
-                    echo "<p>" . htmlspecialchars($post['descricao']) . "</p>";
-                    echo "<img src='" . htmlspecialchars($post['caminho_capa']) . "' alt='Capa do Livro'>";
-                
-                    // Botão de curtir com contador dinâmico
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
-                    echo "<input type='hidden' name='acao' value='curtir_post'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='submit'>Curtir (" . $curtidas . ")</button>";
-                    echo "</form>";
-                
-                    // Outras ações (trocar livro, salvar post)
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;' id='swap-book-form'>";
-                    echo "<input type='hidden' name='acao' value='trocar_livro'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='button' id='swap-book-btn' class='swap-book-btn' data-image='" . htmlspecialchars($post['caminho_capa']) . "'>Trocar Livro</button>";
-                    echo "</form>";
-                
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
-                    echo "<input type='hidden' name='acao' value='salvar_post'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='submit'>Salvar</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
-                ?>
+                    ?>
+
+                    <div class="post">
+                        <h2><?= htmlspecialchars($post['titulo']); ?></h2>
+                        <p><?= htmlspecialchars($post['descricao']); ?></p>
+                        <img src="<?= htmlspecialchars($post['caminho_capa']); ?>" alt="Capa do Livro">
+
+                        <!-- Like button with dynamic counter -->
+                        <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
+                            <input type="hidden" name="acao" value="curtir_post">
+                            <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
+                            <button type="submit">Curtir (<?= $curtidas; ?>)</button>
+                        </form>
+
+                        <!-- Other actions (swap book, save post) -->
+                        <form action="../controllers/post_actions.php" method="POST" style="display:inline;" id="swap-book-form">
+                            <input type="hidden" name="acao" value="trocar_livro">
+                            <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
+                            <button type="button" id="swap-book-btn" class="swap-book-btn" data-image="<?= htmlspecialchars($post['caminho_capa']); ?>">Trocar Livro</button>
+                        </form>
+
+                        <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
+                            <input type="hidden" name="acao" value="salvar_post">
+                            <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
+                            <button type="submit">Salvar</button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </main>
-        <!-- Sidebar direita -->
+
+        <!-- Right Sidebar -->
         <?php include '../views/partials/sidebar_right.php'; ?>
     </div>
-        <!-- Pop-up -->
-        <?php include '../views/partials/pop_ups.php'; ?>
-    
+
+    <!-- Pop-up -->
+    <?php include '../views/partials/pop_ups.php'; ?>
+
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../public/codigo_java.js"></script>
 
 </body>
 </html>
-
 
 <script type="module">
   import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js'

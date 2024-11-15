@@ -1,30 +1,28 @@
 <?php
-session_start();
-require_once '../models/user.php';
-require_once '../models/post.php';
-require_once '../config/database.php';
+    session_start();
+    require_once '../models/user.php';
+    require_once '../models/post.php';
+    require_once '../config/database.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../controllers/user_controller.php?acao=check_auth");
-    exit();
-}
-$database = new Database();
-$conn = $database->getConnection(); // Método para obter a conexão
+    // Verifica se o usuário está autenticado
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../controllers/user_controller.php?acao=check_auth");
+        exit();
+    }
 
-require_once '../models/user.php';
-require_once '../models/post.php';
+    // Conexão com o banco de dados
+    $database = new Database();
+    $conn = $database->getConnection();
 
-if (!isset($_SESSION['user_id'])) {
-   header("Location: ../controllers/user_controller.php?acao=check_auth");
-   exit();
-}
+    // Instanciação de objetos das classes User e Post
+    $user = new User();
+    $post = new Post();
 
-$post = new Post(); 
-$user = new User();
-$user->loadById($_SESSION['user_id']);
-$livros = $user->exibirLivrosFeed($_SESSION['user_id']);
-$postsSalvos = $post->exibirPostsSalvos($_SESSION['user_id']);
-$postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
+    // Carrega os dados do usuário atual
+    $user->loadById($_SESSION['user_id']);
+    $livros = $user->exibirLivrosFeed($_SESSION['user_id']);
+    $postsSalvos = $post->exibirPostsSalvos($_SESSION['user_id']);
+    $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 ?>
 
 <!DOCTYPE html>
@@ -33,6 +31,7 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booknnection - Perfil</title>
+    <!-- Inclusão de estilos CSS -->
     <link rel="stylesheet" href="../public/estilos_css/header.css">
     <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
@@ -75,79 +74,75 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 
             <!-- Seção de postagens -->
             <div id="feed" class="feed">
-            <?php
-                foreach ($postsDoUsuario as $post) {
-                    // Contar o número de curtidas para cada post
-                    $sqlCurtidas = "SELECT COUNT(*) as totalCurtidas FROM curtidas WHERE id_post = ?";
-                    $stmtCurtidas = $conn->prepare($sqlCurtidas);
-                    $stmtCurtidas->bind_param("i", $post['id']);
-                    $stmtCurtidas->execute();
-                    $resultCurtidas = $stmtCurtidas->get_result();
-                    $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
+                <?php foreach ($postsDoUsuario as $post): ?>
+                    <?php
+                        // Contar o número de curtidas para cada post
+                        $sqlCurtidas = "SELECT COUNT(*) as totalCurtidas FROM curtidas WHERE id_post = ?";
+                        $stmtCurtidas = $conn->prepare($sqlCurtidas);
+                        $stmtCurtidas->bind_param("i", $post['id']);
+                        $stmtCurtidas->execute();
+                        $resultCurtidas = $stmtCurtidas->get_result();
+                        $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
+                    ?>
 
-                    echo "<div class='post'>";
-                    echo "<h2>" . htmlspecialchars($post['titulo']) . "</h2>";
-                    echo "<p>" . htmlspecialchars($post['descricao']) . "</p>";
-                    echo "<img src='" . htmlspecialchars($post['caminho_capa']) . "' alt='Capa do Livro'>";
-                    
-                    // Botão de curtir com contador dinâmico
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
-                    echo "<input type='hidden' name='acao' value='curtir_post'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='submit'>Curtir (" . $curtidas . ")</button>";
-                    echo "</form>";
-                    
-                    // Outras ações (trocar livro, salvar post)
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;' id='swap-book-form'>";
-                    echo "<input type='hidden' name='acao' value='trocar_livro'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "</form>";
+                    <div class='post'>
+                        <h2><?= htmlspecialchars($post['titulo']); ?></h2>
+                        <p><?= htmlspecialchars($post['descricao']); ?></p>
+                        <img src="<?= htmlspecialchars($post['caminho_capa']); ?>" alt="Capa do Livro">
+                        
+                        <!-- Botão de curtir com contador dinâmico -->
+                        <form action='../controllers/post_actions.php' method='POST' style='display:inline;'>
+                            <input type='hidden' name='acao' value='curtir_post'>
+                            <input type='hidden' name='id_post' value='<?= $post['id']; ?>'>
+                            <button type='submit'>Curtir (<?= $curtidas; ?>)</button>
+                        </form>
+                        
+                        <!-- Outras ações (trocar livro, salvar post) -->
+                        <form action='../controllers/post_actions.php' method='POST' style='display:inline;' id='swap-book-form'>
+                            <input type='hidden' name='acao' value='trocar_livro'>
+                            <input type='hidden' name='id_post' value='<?= $post['id']; ?>'>
+                        </form>
 
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
-                    echo "<input type='hidden' name='acao' value='salvar_post'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='submit'>Salvar</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
-                ?>
+                        <form action='../controllers/post_actions.php' method='POST' style='display:inline;'>
+                            <input type='hidden' name='acao' value='salvar_post'>
+                            <input type='hidden' name='id_post' value='<?= $post['id']; ?>'>
+                            <button type='submit'>Salvar</button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
             </div>
 
             <!-- Seção de livros -->
             <div id="books" class="feed" style="display:none;">
-                <?php
-                foreach ($livros as $livro) {
-                    echo "<div class='post'>";
-                    echo "<h2>" . htmlspecialchars($livro['titulo']) . "</h2>";
-                    echo "<p>Autor: " . htmlspecialchars($livro['autor']) . "</p>";
-                    echo "<img src='" . htmlspecialchars($livro['caminho_capa']) . "' alt='Capa do Livro'>";
-                    echo "<button onclick='openCreatePostPopup(" . $livro['id'] . ")'>Criar Post</button>";
-                    echo "</div>";
-                }
-                ?>
+                <?php foreach ($livros as $livro): ?>
+                    <div class='post'>
+                        <h2><?= htmlspecialchars($livro['titulo']); ?></h2>
+                        <p>Autor: <?= htmlspecialchars($livro['autor']); ?></p>
+                        <img src='<?= htmlspecialchars($livro['caminho_capa']); ?>' alt='Capa do Livro'>
+                        <button onclick='openCreatePostPopup(<?= $livro['id']; ?>)'>Criar Post</button>
+                    </div>
+                <?php endforeach; ?>
             </div>
 
             <!-- Seção de posts salvos -->
             <div id="saved-posts" class="feed" style="display:none;">
-                <?php
-                foreach ($postsSalvos as $post) {
-                    echo "<div class='post'>";
-                    echo "<h2>" . htmlspecialchars($post['titulo']) . "</h2>";
-                    echo "<p>" . htmlspecialchars($post['descricao']) . "</p>";
-                    echo "<img src='" . htmlspecialchars($post['caminho_capa']) . "' alt='Capa do Livro'>";
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
-                    echo "<input type='hidden' name='acao' value='curtir_post'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='submit'>Curtir (" . $post['curtidas'] . ")</button>";
-                    echo "</form>";
-                    echo "<form action='../controllers/post_actions.php' method='POST' style='display:inline;'>";
-                    echo "<input type='hidden' name='acao' value='salvar_post'>";
-                    echo "<input type='hidden' name='id_post' value='" . $post['id'] . "'>";
-                    echo "<button type='submit'>Salvar</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
-                ?>
+                <?php foreach ($postsSalvos as $post): ?>
+                    <div class='post'>
+                        <h2><?= htmlspecialchars($post['titulo']); ?></h2>
+                        <p><?= htmlspecialchars($post['descricao']); ?></p>
+                        <img src='<?= htmlspecialchars($post['caminho_capa']); ?>' alt='Capa do Livro'>
+                        <form action='../controllers/post_actions.php' method='POST' style='display:inline;'>
+                            <input type='hidden' name='acao' value='curtir_post'>
+                            <input type='hidden' name='id_post' value='<?= $post['id']; ?>'>
+                            <button type='submit'>Curtir (<?= $post['curtidas']; ?>)</button>
+                        </form>
+                        <form action='../controllers/post_actions.php' method='POST' style='display:inline;'>
+                            <input type='hidden' name='acao' value='salvar_post'>
+                            <input type='hidden' name='id_post' value='<?= $post['id']; ?>'>
+                            <button type='submit'>Salvar</button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </main>
 
