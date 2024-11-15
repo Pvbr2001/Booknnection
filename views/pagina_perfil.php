@@ -32,7 +32,7 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booknnection - Perfil de Usuário</title>
+    <title>Booknnection - Perfil</title>
     <link rel="stylesheet" href="../public/estilos_css/header.css">
     <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">

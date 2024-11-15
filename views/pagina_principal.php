@@ -41,7 +41,7 @@ $posts = $post->exibirPostsPorCidade($cidade); // Use the Post class to fetch po
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booknnection - Página Principal</title>
+    <title>Booknnection - Feed</title>
     <link rel="stylesheet" href="../public/estilos_css/header.css">
     <link rel="stylesheet" href="../public/estilos_css/feed.css">
     <link rel="stylesheet" href="../public/estilos_css/popup.css">
