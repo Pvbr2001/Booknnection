@@ -11,10 +11,11 @@
 
             // Buscar notificações para o usuário atual
             $id_usuario = $_SESSION['user_id'];
-            $sql = "SELECT u.nome AS nome_usuario, p.titulo AS titulo_post
+            $sql = "SELECT u.nome AS nome_usuario, ue.nome AS nome_usuario_emissor, p.titulo AS titulo_post
                     FROM notificacoes n
                     JOIN posts p ON p.id = n.id_post
-                    JOIN usuario u ON u.id = p.id_usuario
+                    JOIN usuario u ON u.id = n.id_usuario -- Refeição do usuário que receberá a notificação
+                    JOIN usuario ue ON ue.id = n.id_usuario_emissor -- Refeição do usuário que enviou a notificação
                     WHERE n.id_usuario = ? 
                     ORDER BY n.data_criacao DESC"; 
             $stmt = $conn->prepare($sql);
@@ -26,13 +27,14 @@
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<li>";
-                    echo "<strong>" . htmlspecialchars($row['nome_usuario']) . "</strong> solicitou uma troca para o livro: ";
+                    echo "<strong>" . htmlspecialchars($row['nome_usuario_emissor']) . "</strong> solicitou uma troca para o livro: ";
                     echo "<a href='#'>" . htmlspecialchars($row['titulo_post']) . "</a>";
                     echo "</li>";
                 }
             } else {
                 echo "<li>Nenhuma notificação recente.</li>";
             }
+            
 
             $stmt->close();
             $conn->close();

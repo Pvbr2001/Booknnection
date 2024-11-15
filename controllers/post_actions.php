@@ -53,12 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $post_dono = $result->fetch_assoc();
         $id_usuario_dono = $post_dono['id_usuario'];  // Dono do post (usuário 2)
         
-        // Inserir a notificação para o dono do post (usuário 2)
-        $sql = "INSERT INTO notificacoes (id_usuario, tipo, id_post) VALUES (?, 'troca', ?)";
+       // Inserir a notificação para o dono do post (usuário 2)
+        $sql = "INSERT INTO notificacoes (id_usuario, id_usuario_emissor, tipo, id_post) VALUES (?, ?, 'troca', ?)";
         $stmt = $conn->prepare($sql);
-        
+
         if ($stmt) {
-            $stmt->bind_param("ii", $id_usuario_dono, $id_post);
+            $stmt->bind_param("iii", $id_usuario_dono, $id_usuario_atual, $id_post); // Passando o id do emissor
             if ($stmt->execute()) {
                 echo "<script>alert('Notificação enviada com sucesso para o dono do post!'); window.location.href = document.referrer;</script>";
             } else {

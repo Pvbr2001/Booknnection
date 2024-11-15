@@ -64,13 +64,16 @@ CREATE TABLE posts_salvos (
 CREATE TABLE notificacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL, -- Usuário que receberá a notificação
+    id_usuario_emissor INT NOT NULL, -- Usuário que enviou a notificação
     tipo ENUM('curtida', 'salvo', 'troca') NOT NULL, -- Tipo de notificação
     id_post INT NOT NULL, -- Post relacionado à notificação
     lida BOOLEAN DEFAULT FALSE, -- Status de leitura
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de criação
     FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    FOREIGN KEY (id_usuario_emissor) REFERENCES usuario(id), -- Adicionando a relação com o usuário emissor
     FOREIGN KEY (id_post) REFERENCES posts(id)
 );
+
 
 CREATE OR REPLACE VIEW vw_notificacoes AS
 SELECT 
