@@ -4,34 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booknnection - Home</title>
-    <link rel="stylesheet" href="../public/estilos_css/home.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            background-image: url('../public/imagens/fundo2.jpg');
+        }
+
+        .navbar {
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #ffffff; /* Fundo branco */
+            border-radius: 8px; /* Adiciona bordas arredondadas para dar um visual mais suave */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave ao redor do fundo */
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            margin: 5px;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 
     <!-- Navbar -->
-    <header class="navbar">
-        <div class="header-content">
-            <h1>
-                <a href="pagina_home.php" class="title-link">Booknnection</a>
-            </h1>
-            <nav>
-                <ul class="nav-list">
-                    <li><a href="pagina_login.php" target="_blank">Login</a></li>
-                    <li><a href="pagina_login.php#showCadastro" target="_blank">Cadastro</a></li>
-                    <li><a href="sobre.html" target="_blank">Sobre Nós</a></li>
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="pagina_home.php">Booknnection</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alterna navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="pagina_login.php" target="_blank">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="pagina_login.php#showCadastro" target="_blank">Cadastro</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sobre.html" target="_blank">Sobre Nós</a></li>
+                    <li class="nav-item"><a class="nav-link" href="teste.php" target="_blank">Testando bootstrap</a></li>
                 </ul>
-            </nav>
+            </div>
         </div>
     </header>
 
     <!-- Conteúdo Principal -->
-    <div class="main-container">
+    <div class="container">
         <section class="hero">
             <h2>Bem-vindo à Booknnection!</h2>
             <p>Conecte-se com leitores e troque livros facilmente.</p>
             <div class="button-group">
-                <a href="pagina_login.php" class="btn" target="_blank">Login</a>
-                <a href="pagina_login.php#showCadastro" class="btn" target="_blank">Cadastro</a>
+                <a href="pagina_login.php" class="btn btn-primary" target="_blank">Login</a>
+                <a href="pagina_login.php#showCadastro" class="btn btn-secondary" target="_blank">Cadastro</a>
             </div>
         </section>
     </div>
@@ -40,20 +86,23 @@
         <p>&copy; 2024 Booknnection</p>
     </footer>
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="../public/codigo_java.js"></script>
 
+    <script type="module">
+        import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
+
+        Typebot.initBubble({
+          typebot: "suporte-ao-cliente-squxxd3",
+          apiHost: "http://34.132.245.158:8080",
+          previewMessage: { message: "Está precisando de ajuda?", autoShowDelay: 5000 },
+          theme: {
+            button: { backgroundColor: "#0042DA" },
+            chatWindow: { backgroundColor: "#fff" },
+          },
+        });
+    </script>
 </body>
 </html>
-<script type="module">
-    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
-  
-    Typebot.initBubble({
-      typebot: "suporte-ao-cliente-squxxd3",
-      apiHost: "http://34.132.245.158:8080",
-      previewMessage: { message: "Está precisando de ajuda?", autoShowDelay: 5000 },
-      theme: {
-        button: { backgroundColor: "#0042DA" },
-        chatWindow: { backgroundColor: "#fff" },
-      },
-    });
-  </script>
