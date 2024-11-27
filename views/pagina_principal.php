@@ -216,13 +216,13 @@ $posts = $post->exibirPostsPorCidade($cidade);
                         <a class="nav-link" href="pagina_perfil.php">Perfil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Sobre</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="#">Manual</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="pagina_home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pagina_configuracoes.php">Configurações</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../controllers/User_Controller.php?acao=logout">Logout</a>
@@ -378,7 +378,28 @@ $posts = $post->exibirPostsPorCidade($cidade);
                             </div>
                         </div>
 
-                        
+                        <?php if (is_array($post)) {?>
+                        <!-- Pop-up para troca de livro -->
+                        <div id="swap-book-popup" class="popup-container pending-popup">
+                            <div class="popup-content">
+                                <span id="close-swap-book-popup" class="popup-close">&times;</span>
+                                <h2>Trocar Livro</h2>
+                                <form action="../controllers/post_actions.php" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="acao" value="trocar_livro">
+                                    <input type="hidden" name="id_post" id="id_post" value="">
+                                    <div class="post-info">
+                                        <img src="<?php echo $post['caminho_capa']; ?>" alt="Capa do Livro" id="imagem_post">
+                                        <h1>Usuário atual: <?php echo $user->getNome(); ?> </h1>
+                                        <h1>Dono do post: <?php echo $post['nome'];?> </h1>
+                                    </div>
+                                    <label for="livro_para_trocar">Livro para Trocar:</label>
+                                    <input type="text" name="livro_para_trocar" id="livro_para_trocar" required>
+                                    <button type="submit" class="green-button">Confirmar</button>
+                                </form>
+                            </div>
+                        </div>
+                        <?php } ?>
+
                     </div>
                 </div>
             </div>
