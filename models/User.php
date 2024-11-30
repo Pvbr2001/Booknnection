@@ -20,7 +20,7 @@ class User {
     private $account_type;
 
     public function __construct() {
-        $database = new Database();
+        $database = Database::getInstance();
         $this->conn = $database->getConnection();
         $this->chave = getenv('CHAVE_CRIPTOGRAFIA');
     }

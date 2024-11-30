@@ -12,11 +12,9 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Database connection
-$database = new Database();
+$database = Database::getInstance();
 $conn = $database->getConnection();
 
-// Load user and fetch posts by user's city
 $user = new User();
 $user->loadById($_SESSION['user_id']);
 $cidade = $user->getCidade();
@@ -24,6 +22,7 @@ $cidade = $user->getCidade();
 $post = new Post();
 $posts = $post->exibirPostsPorCidade($cidade);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,166 +35,8 @@ $posts = $post->exibirPostsPorCidade($cidade);
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f4f9;
-        }
-
-        .navbar {
-            margin-bottom: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-title {
-            font-weight: bold;
-        }
-
-        .card-footer {
-            background-color: #f8f9fa;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        .footer {
-            background-color: #343a40;
-            color: white;
-            text-align: center;
-            padding: 15px 0;
-        }
-
-        .rounded-circle {
-            max-width: 100px;
-            border: 3px solid #007bff;
-        }
-
-        .sidebar {
-            padding: 20px;
-            background-color: #f8f9fa;
-            height: 100%;
-            border-right: 1px solid #ddd;
-        }
-
-        .col-left,
-        .col-right {
-            flex: 0 0 25%;
-            max-width: 25%;
-        }
-
-        .col-middle {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group input {
-            border-radius: 4px 0 0 4px;
-        }
-
-        .input-group button {
-            border-radius: 0 4px 4px 0;
-        }
-
-        .list-unstyled a:hover {
-            text-decoration: underline;
-        }
-
-        /* Estilos para o pop-up */
-        .popup-container {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            transition: all 0.4s ease;
-        }
-
-        .popup-content {
-            position: relative;
-            margin: 10% auto;
-            padding: 20px;
-            width: 300px;
-            background-color: white;
-            border-radius: 8px;
-            text-align: center;
-            animation: slide-up 0.4s ease forwards;
-        }
-
-        @keyframes slide-up {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .open-popup {
-            display: block;
-        }
-
-        .darken {
-            filter: brightness(50%);
-        }
-
-        .popup-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-            color: #2c3e50;
-        }
-
-        /* Estilo para o container da imagem */
-        .popup-image-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        /* Estilo para a imagem do livro */
-        .popup-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../public/estilos_css/principal.css">
 </head>
 
 <body>
@@ -321,21 +162,36 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                                 <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
                                                     <input type="hidden" name="acao" value="curtir_post">
                                                     <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
-                                                    <button class="btn btn-primary" type="submit">Curtir (<?= $curtidas; ?>)</button>
+                                                    <button class="btn btn-primary" type="submit">
+                                                        <i class="material-icons">thumb_up</i> Curtir (<?= $curtidas; ?>)
+                                                    </button>
                                                 </form>
 
                                                 <!-- Swap book button -->
                                                 <form action="../controllers/post_actions.php" method="POST" style="display:inline;" id="swap-book-form">
                                                     <input type="hidden" name="acao" value="trocar_livro">
                                                     <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
-                                                    <button type="button" id="swap-book-btn" class="btn btn-secondary" data-image="<?= htmlspecialchars($post['caminho_capa']); ?>">Trocar Livro</button>
+                                                    <button type="button" id="swap-book-btn" class="btn btn-secondary ml-2" data-image="<?= htmlspecialchars($post['caminho_capa']); ?>">
+                                                        <i class="material-icons">swap_horiz</i> Trocar Livro
+                                                    </button>
                                                 </form>
 
                                                 <!-- Save post button -->
                                                 <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
                                                     <input type="hidden" name="acao" value="salvar_post">
                                                     <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
-                                                    <button class="btn btn-success" type="submit">Salvar</button>
+                                                    <button class="btn btn-success ml-2" type="submit">
+                                                        <i class="material-icons">bookmark</i> Salvar
+                                                    </button>
+                                                </form>
+
+                                                <!-- View Comments button -->
+                                                <form action="../controllers/post_actions.php" method="GET" style="display:inline;">
+                                                    <input type="hidden" name="acao" value="ver_comentarios">
+                                                    <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
+                                                    <button class="btn btn-info ml-2" type="submit">
+                                                        <i class="material-icons">comment</i> Ver Comentários
+                                                    </button>
                                                 </form>
                                             </div>
                                         </div>
@@ -349,38 +205,52 @@ $posts = $post->exibirPostsPorCidade($cidade);
 
                         <!--popup de adicionar livro-->
                         <div id="popup" class="popup-container">
-                            <div class="popup-content">
+                            <div class="popup-content form-container">
                                 <span id="close-popup" class="popup-close">&times;</span>
                                 <h2>Adicionar Livro</h2>
                                 <form action="../controllers/user_controller.php" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="acao" value="adicionar_livro">
-                                    <label for="titulo">Título do livro:</label>
-                                    <input type="text" name="titulo" id="titulo" required>
 
-                                    <label for="autor">Autor:</label>
-                                    <input type="text" name="autor" id="autor" required>
+                                    <div class="floating-label">
+                                        <input type="text" name="titulo" id="titulo" required>
+                                        <label for="titulo">Título do livro</label>
+                                    </div>
 
-                                    <label for="isbn">ISBN:</label>
-                                    <input type="text" name="isbn" id="isbn" required>
+                                    <div class="floating-label">
+                                        <input type="text" name="autor" id="autor" required>
+                                        <label for="autor">Autor</label>
+                                    </div>
 
-                                    <label for="capa_tipo">Tipo de Capa:</label>
-                                    <input type="text" name="capa_tipo" id="capa_tipo">
+                                    <div class="floating-label">
+                                        <input type="text" name="isbn" id="isbn" required>
+                                        <label for="isbn">ISBN</label>
+                                    </div>
 
-                                    <label for="ano_lancamento">Ano de Lançamento:</label>
-                                    <input type="number" name="ano_lancamento" id="ano_lancamento" required>
+                                    <div class="floating-label">
+                                        <input type="text" name="capa_tipo" id="capa_tipo">
+                                        <label for="capa_tipo">Tipo de Capa</label>
+                                    </div>
 
-                                    <label for="capa">Capa do Livro:</label>
-                                    <input type="file" name="capa" id="capa">
+                                    <div class="floating-label">
+                                        <input type="number" name="ano_lancamento" id="ano_lancamento" required>
+                                        <label for="ano_lancamento">Ano de Lançamento</label>
+                                    </div>
 
-                                    <button type="submit">Adicionar Livro ao Banco</button>
-                                    <button type="submit" name="adicionar_lista" value="1">Adicionar Livro ao Banco e à Lista</button>
+                                    <div class="floating-label">
+                                        <input type="file" name="capa" id="capa">
+                                        <label for="capa">Capa do Livro</label>
+                                    </div>
+
+                                    <button type="submit" class="btn-submit">Adicionar Livro ao Banco</button>
+                                    <button type="submit" name="adicionar_lista" value="1" class="btn-submit">Adicionar Livro ao Banco e à Lista</button>
+                                    <a href="#" id="show-isbn-search">Pesquisar por ISBN</a>
                                 </form>
                             </div>
                         </div>
 
                         <?php if (is_array($post)) {?>
                         <!-- Pop-up para troca de livro -->
-                        <div id="swap-book-popup" class="popup-container pending-popup">
+                        <div id="swap-book-popup" class="popup-swap">
                             <div class="popup-content">
                                 <span id="close-swap-book-popup" class="popup-close">&times;</span>
                                 <h2>Trocar Livro</h2>
@@ -388,7 +258,7 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                     <input type="hidden" name="acao" value="trocar_livro">
                                     <input type="hidden" name="id_post" id="id_post" value="">
                                     <div class="post-info">
-                                        <img src="<?php echo $post['caminho_capa']; ?>" alt="Capa do Livro" id="imagem_post">
+                                        <img src="<?php echo $post['caminho_capa']; ?>" alt="Capa do Livro" id="imagem_post" style="width: auto; height: 300px;">
                                         <h1>Usuário atual: <?php echo $user->getNome(); ?> </h1>
                                         <h1>Dono do post: <?php echo $post['nome'];?> </h1>
                                     </div>
@@ -428,7 +298,7 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                 require_once '../config/database.php';
 
                                 // Conectar ao banco de dados
-                                $database = new Database();
+                                $database = Database::getInstance();
                                 $conn = $database->getConnection();
 
                                 // Buscar notificações para o usuário atual
@@ -468,12 +338,28 @@ $posts = $post->exibirPostsPorCidade($cidade);
         </div>
     </div>
 
+    <!-- Pop-up de pesquisa por ISBN -->
+    <div id="isbn-search-popup" class="popup-container">
+        <div class="popup-content">
+            <span id="close-isbn-search-popup" class="popup-close">&times;</span>
+            <h2>Pesquisar por ISBN</h2>
+            <form action="../controllers/user_controller.php" method="POST">
+                <input type="hidden" name="acao" value="pesquisar_isbn">
+                <label for="isbn_search">ISBN:</label>
+                <input type="text" name="isbn" id="isbn_search" required>
+                <button type="submit">Pesquisar</button>
+            </form>
+        </div>
+    </div>
+
     <footer class="footer">
         <p>Desenvolvido Para TCC Senai</p>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../public/codigo_java.js"></script>
+    <script src="../public/adicionar_livro.js"></script>
+    <script src="../public/trocar_livro.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -484,6 +370,7 @@ $posts = $post->exibirPostsPorCidade($cidade);
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+
 </body>
 
 </html>

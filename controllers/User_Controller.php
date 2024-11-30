@@ -2,6 +2,7 @@
 session_start();
 require_once '../models/user.php';
 require_once '../models/post.php';
+require_once '../config/database.php'; // Incluir o arquivo de configuração do banco de dados
 
 // Verifica se é uma requisição GET para o logout ou check_auth
 if (isset($_GET['acao'])) {
@@ -114,8 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $post = new Post();
         $id_post = $_POST['id_post'];
+        $id_usuario = $_SESSION['user_id'];
 
-        if ($post->curtirPost($id_post,$id_usuario)) {
+        if ($post->curtirPost($id_post, $id_usuario)) {
             echo "<script>alert('Post curtido com sucesso');</script>";
         } else {
             echo "<script>alert('Erro ao curtir o post');</script>";
@@ -140,3 +142,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo 'InvalidRequestMethod';
 }
+?>

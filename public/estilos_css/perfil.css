@@ -1,0 +1,243 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+}
+
+.navbar {
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.footer {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+}
+
+.rounded-circle {
+    max-width: 100px;
+    border: 3px solid #007bff;
+}
+
+.sidebar {
+    padding: 20px;
+    background-color: #f8f9fa;
+    height: 100%;
+    border-right: 1px solid #ddd;
+}
+
+.col-left,
+.col-right {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
+.col-middle {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group input {
+    border-radius: 4px 0 0 4px;
+}
+
+.input-group button {
+    border-radius: 0 4px 4px 0;
+}
+
+.list-unstyled a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos exclusivos para o pop-up de adicionar livro */
+.popup-container {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease;
+}
+
+.popup-content {
+    position: relative;
+    margin: 10% auto;
+    padding: 20px;
+    width: 300px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    animation: slide-up 0.4s ease forwards;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.open-popup {
+    display: block;
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #2c3e50;
+}
+
+/* Estilos para os campos de entrada e select */
+.form-container input[type="text"],
+.form-container input[type="email"],
+.form-container input[type="password"],
+.form-container input[type="number"],
+.form-container input[type="file"],
+.form-container select {
+    padding: 10px 15px;
+    text-align: left;
+    line-height: normal;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Estilos para o botão de envio */
+.form-container button[type="submit"] {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px; /* Adiciona espaço entre os botões */
+    transition: background-color 0.3s ease;
+}
+
+.form-container button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+/* Estilos para a animação de deslocamento do texto */
+.floating-label {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.floating-label label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 16px;
+    color: #ccc;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.floating-label input {
+    padding: 20px 10px 10px 10px;
+    font-size: 16px;
+}
+
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label {
+    top: -17px;
+    left: 10px;
+    font-size: 12px;
+    color: #3498db;
+}
+
+/* Estilo para o container da imagem */
+.popup-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+/* Estilo para a imagem do livro */
+.popup-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajuste a altura da imagem do banner */
+.profile-banner img {
+    width: 100%;
+    height: 200px; /* Ajuste a altura conforme necessário */
+    object-fit: cover;
+}
+
+/* Garantir que a imagem de perfil seja redonda */
+.profile-avatar img {
+    width: 100px; /* Ajuste o tamanho conforme necessário */
+    height: 100px; /* Ajuste o tamanho conforme necessário */
+    border-radius: 50%;
+    border: 3px solid #007bff;
+}
+
+.book-icon {
+    transition: transform 0.3s ease;
+}
+
+.book-icon:hover {
+    transform: scale(1.05);
+}

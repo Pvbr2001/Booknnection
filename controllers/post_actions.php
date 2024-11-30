@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../models/post.php'; 
-require_once '../config/database.php'; 
+require_once '../models/post.php';
+require_once '../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
@@ -10,11 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Classe Post não encontrada!");
     }
 
-    $post = new Post(); 
+    $post = new Post();
 
     if ($acao === 'curtir_post') {
         $id_post = $_POST['id_post'];
-        $id_user = $_SESSION['user_id']; 
+        $id_user = $_SESSION['user_id'];
 
         if ($post->curtirPost($id_post, $id_user)) {
             echo "<script>alert('Post curtido com sucesso'); window.location.href = document.referrer;</script>";
@@ -40,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Conectar ao banco de dados
-        $database = new Database();
+        // Obter a instância da conexão com o banco de dados
+        $database = Database::getInstance();
         $conn = $database->getConnection();
 
         // Buscar o ID do dono do post (usuário 2)
@@ -52,8 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
         $post_dono = $result->fetch_assoc();
         $id_usuario_dono = $post_dono['id_usuario'];  // Dono do post (usuário 2)
-        
-       // Inserir a notificação para o dono do post (usuário 2)
+
+        // Inserir a notificação para o dono do post (usuário 2)
         $sql = "INSERT INTO notificacoes (id_usuario, id_usuario_emissor, tipo, id_post) VALUES (?, ?, 'troca', ?)";
         $stmt = $conn->prepare($sql);
 
