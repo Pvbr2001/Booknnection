@@ -23,7 +23,6 @@ $post = new Post();
 $posts = $post->exibirPostsPorCidade($cidade);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -75,12 +74,12 @@ $posts = $post->exibirPostsPorCidade($cidade);
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-left sidebar">
+            <div class="col-left sidebar" id="sidebar-left">
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header toggle-header card-title-no-underline" data-target="categorias">
                         Categorias
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" id="categorias">
                         <div class="row">
                             <div class="col-lg-6">
                                 <ul class="list-unstyled">
@@ -101,26 +100,24 @@ $posts = $post->exibirPostsPorCidade($cidade);
                 </div>
 
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header toggle-header card-title-no-underline" data-target="topicos-populares">
                         Tópicos Populares
                     </div>
-                    <aside class="sidebar-left">
-                        <div class="sidebar-section">
-                            <ul>
-                                <li><a href="#">Tópico 1</a></li>
-                                <li><a href="#">Tópico 2</a></li>
-                                <li><a href="#">Tópico 3</a></li>
-                            </ul>
-                        </div>
+                    <div class="card-body" id="topicos-populares">
+                        <ul>
+                            <li><a href="#">Tópico 1</a></li>
+                            <li><a href="#">Tópico 2</a></li>
+                            <li><a href="#">Tópico 3</a></li>
+                        </ul>
                         <button id="add-book-btn" class="btn btn-primary">Adicionar Livro!</button>
-                    </aside>
+                    </div>
                 </div>
 
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header toggle-header card-title-no-underline" data-target="artigos-recentes">
                         Artigos Recentes
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" id="artigos-recentes">
                         <ul class="list-unstyled">
                             <li><a href="#">Aprenda como criar um site responsivo</a></li>
                             <li><a href="#">3 coisas que você precisa saber sobre CSS</a></li>
@@ -274,12 +271,12 @@ $posts = $post->exibirPostsPorCidade($cidade);
                 </div>
             </div>
 
-            <div class="col-right sidebar">
+            <div class="col-right sidebar" id="sidebar-right">
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header toggle-header card-title-no-underline" data-target="pesquisar">
                         Pesquisar
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" id="pesquisar">
                         <div class="input-group">
                             <input class="form-control" type="text" placeholder="Digite aqui...">
                             <button class="btn btn-secondary ml-2">Buscar</button>
@@ -288,51 +285,53 @@ $posts = $post->exibirPostsPorCidade($cidade);
                 </div>
 
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header toggle-header card-title-no-underline" data-target="notificacoes">
                         Notificações
                     </div>
-                    <aside class="sidebar-right">
-                        <div class="sidebar-section">
-                            <ul>
-                                <?php
-                                require_once '../config/database.php';
+                    <div class="card-body" id="notificacoes">
+                        <aside class="sidebar-right">
+                            <div class="sidebar-section">
+                                <ul>
+                                    <?php
+                                    require_once '../config/database.php';
 
-                                // Conectar ao banco de dados
-                                $database = Database::getInstance();
-                                $conn = $database->getConnection();
+                                    // Conectar ao banco de dados
+                                    $database = Database::getInstance();
+                                    $conn = $database->getConnection();
 
-                                // Buscar notificações para o usuário atual
-                                $id_usuario = $_SESSION['user_id'];
-                                $sql = "SELECT u.nome AS nome_usuario, ue.nome AS nome_usuario_emissor, p.titulo AS titulo_post
-                                        FROM notificacoes n
-                                        JOIN posts p ON p.id = n.id_post
-                                        JOIN usuario u ON u.id = n.id_usuario -- Refeição do usuário que receberá a notificação
-                                        JOIN usuario ue ON ue.id = n.id_usuario_emissor -- Refeição do usuário que enviou a notificação
-                                        WHERE n.id_usuario = ?
-                                        ORDER BY n.data_criacao DESC";
-                                $stmt = $conn->prepare($sql);
-                                $stmt->bind_param("i", $id_usuario);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
+                                    // Buscar notificações para o usuário atual
+                                    $id_usuario = $_SESSION['user_id'];
+                                    $sql = "SELECT u.nome AS nome_usuario, ue.nome AS nome_usuario_emissor, p.titulo AS titulo_post
+                                            FROM notificacoes n
+                                            JOIN posts p ON p.id = n.id_post
+                                            JOIN usuario u ON u.id = n.id_usuario -- Refeição do usuário que receberá a notificação
+                                            JOIN usuario ue ON ue.id = n.id_usuario_emissor -- Refeição do usuário que enviou a notificação
+                                            WHERE n.id_usuario = ?
+                                            ORDER BY n.data_criacao DESC";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->bind_param("i", $id_usuario);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
 
-                                // Exibir notificações
-                                if ($result->num_rows > 0) {
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo "<li>";
-                                        echo "<strong>" . htmlspecialchars($row['nome_usuario_emissor']) . "</strong> solicitou uma troca para o livro: ";
-                                        echo "<a href='#'>" . htmlspecialchars($row['titulo_post']) . "</a>";
-                                        echo "</li>";
+                                    // Exibir notificações
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            echo "<li>";
+                                            echo "<strong>" . htmlspecialchars($row['nome_usuario_emissor']) . "</strong> solicitou uma troca para o livro: ";
+                                            echo "<a href='#'>" . htmlspecialchars($row['titulo_post']) . "</a>";
+                                            echo "</li>";
+                                        }
+                                    } else {
+                                        echo "<li>Nenhuma notificação recente.</li>";
                                     }
-                                } else {
-                                    echo "<li>Nenhuma notificação recente.</li>";
-                                }
 
-                                $stmt->close();
-                                $conn->close();
-                                ?>
-                            </ul>
-                        </div>
-                    </aside>
+                                    $stmt->close();
+                                    $conn->close();
+                                    ?>
+                                </ul>
+                            </div>
+                        </aside>
+                    </div>
                 </div>
             </div>
         </div>
@@ -360,6 +359,7 @@ $posts = $post->exibirPostsPorCidade($cidade);
     <script src="../public/codigo_java.js"></script>
     <script src="../public/adicionar_livro.js"></script>
     <script src="../public/trocar_livro.js"></script>
+    <script src="../public/toggle.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

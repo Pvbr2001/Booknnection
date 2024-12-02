@@ -1,43 +1,33 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Função para abrir o pop-up de adicionar livro
-    const addBookBtn = document.getElementById("add-book-btn");
-    const popup = document.getElementById("popup");
-    const closePopup = document.getElementById("close-popup");
+$(document).ready(function() {
+    // Abrir pop-up de adicionar livro
+    $('#add-book-btn').click(function() {
+        $('#popup').addClass('open-popup');
+    });
 
-    if (addBookBtn && popup && closePopup) {
-        addBookBtn.onclick = function() {
-            popup.classList.add("open-popup");
-        }
+    // Fechar pop-up de adicionar livro
+    $('#close-popup').click(function() {
+        $('#popup').removeClass('open-popup');
+    });
 
-        closePopup.onclick = function() {
-            closePopupFunction();
-        }
+    // Abrir pop-up de pesquisa por ISBN
+    $('#show-isbn-search').click(function() {
+        $('#isbn-search-popup').addClass('open-popup');
+    });
 
-        window.onclick = function(event) {
-            if (event.target == popup) {
-                closePopupFunction();
-            }
-        }
+    // Fechar pop-up de pesquisa por ISBN
+    $('#close-isbn-search-popup').click(function() {
+        $('#isbn-search-popup').removeClass('open-popup');
+    });
 
-        function closePopupFunction() {
-            popup.classList.remove("open-popup");
-        }
-    }
+    // Abrir pop-up de criar post
+    $('.book-icon').click(function() {
+        var livroId = $(this).data('id');
+        $('#id_livro').val(livroId);
+        $('#create-post-popup').addClass('open-popup');
+    });
 
-    // Função para abrir o pop-up de pesquisa por ISBN
-    const showIsbnSearch = document.getElementById('show-isbn-search');
-    const isbnSearchPopup = document.getElementById('isbn-search-popup');
-    const closeIsbnSearchPopup = document.getElementById('close-isbn-search-popup');
-
-    if (showIsbnSearch && isbnSearchPopup && closeIsbnSearchPopup) {
-        showIsbnSearch.addEventListener('click', function(e) {
-            e.preventDefault();
-            isbnSearchPopup.classList.add('open-popup');
-            popup.classList.remove('open-popup');
-        });
-
-        closeIsbnSearchPopup.addEventListener('click', function() {
-            isbnSearchPopup.classList.remove('open-popup');
-        });
-    }
+    // Fechar pop-up de criar post
+    $('#close-create-post-popup').click(function() {
+        $('#create-post-popup').removeClass('open-popup');
+    });
 });

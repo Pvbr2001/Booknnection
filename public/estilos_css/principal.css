@@ -55,10 +55,15 @@ body {
 }
 
 .sidebar {
+    display: block;
     padding: 20px;
     background-color: #f8f9fa;
     height: 100%;
     border-right: 1px solid #ddd;
+}
+
+.sidebar.hidden {
+    display: none;
 }
 
 .col-left,
@@ -249,37 +254,6 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Media Queries para telas menores */
-@media (max-width: 768px) {
-    .col-left, .col-right {
-        display: none;
-    }
-
-    .col-middle {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-
-    .sidebar-toggle {
-        display: block;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-    }
-
-    .sidebar-toggle i {
-        font-size: 24px;
-    }
-}
-
 /* Animação de deslizamento para cima */
 @keyframes slide-up {
     from {
@@ -290,4 +264,25 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Estilo para o card-header com toggle */
+.toggle-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-header:hover {
+    text-decoration: none;
+}
+
+/* Estilo para remover a linha debaixo dos títulos dos cards */
+.card-title-no-underline {
+    border-bottom: none;
+    text-decoration: none;
+}
+
+/* Classe para ocultar elementos */
+.hidden {
+    display: none;
 }
