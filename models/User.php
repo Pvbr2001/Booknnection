@@ -192,5 +192,5 @@ class User {
         }
         return $livros;
     }
-}
 
+}

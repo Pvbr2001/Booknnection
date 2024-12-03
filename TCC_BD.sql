@@ -24,6 +24,7 @@ CREATE TABLE livros (
     caminho_capa VARCHAR(255)
 );
 
+
 CREATE TABLE lista_livros (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -42,6 +43,17 @@ CREATE TABLE posts (
     FOREIGN KEY (id_usuario) REFERENCES usuario(id),
     FOREIGN KEY (id_livro) REFERENCES livros(id)
 );
+
+CREATE TABLE comentarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_post INT NOT NULL,
+    id_usuario INT NOT NULL,
+    texto TEXT NOT NULL,
+    data_comentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_post) REFERENCES posts(id),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+);
+
 
 CREATE TABLE curtidas (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -85,20 +97,6 @@ FROM
 JOIN 
     usuario u ON p.id_usuario = u.id;
 
-create table pedding(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario2 int not null,
-    id_usuario INT NOT NULL,
-    id_post INT NOT NULL,
-    id_livro int not null,
-    id_livro2 int not null,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
-    FOREIGN KEY (id_usuario2) REFERENCES usuario(id),
-    FOREIGN KEY (id_post) REFERENCES posts(id),
-    FOREIGN KEY (id_livro) REFERENCES livros(id_livro),
-    FOREIGN KEY (id_livro2) REFERENCES livros(id_livro)
-);
 
 ALTER USER 'root'@'localhost' IDENTIFIED BY '81631240';
 FLUSH PRIVILEGES;

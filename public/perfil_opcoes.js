@@ -17,4 +17,16 @@ $(document).ready(function() {
         $('#books').hide();
         $('#saved-posts').show();
     });
+
+    // Abrir pop-up de criar post ao clicar em um livro
+    $('.book-icon').click(function() {
+        var livroId = $(this).data('id');
+        $('#id_livro').val(livroId);
+        $('#create-post-popup').addClass('open-popup');
+    });
+
+    // Fechar pop-up de criar post
+    $('#close-create-post-popup').click(function() {
+        $('#create-post-popup').removeClass('open-popup');
+    });
 });

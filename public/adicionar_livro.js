@@ -1,12 +1,12 @@
 $(document).ready(function() {
     // Abrir pop-up de adicionar livro
     $('#add-book-btn').click(function() {
-        $('#popup').addClass('open-popup');
+        $('#add-book-popup').addClass('open-popup');
     });
 
     // Fechar pop-up de adicionar livro
-    $('#close-popup').click(function() {
-        $('#popup').removeClass('open-popup');
+    $('#close-add-book-popup').click(function() {
+        $('#add-book-popup').removeClass('open-popup');
     });
 
     // Abrir pop-up de pesquisa por ISBN
@@ -19,15 +19,17 @@ $(document).ready(function() {
         $('#isbn-search-popup').removeClass('open-popup');
     });
 
-    // Abrir pop-up de criar post
-    $('.book-icon').click(function() {
-        var livroId = $(this).data('id');
-        $('#id_livro').val(livroId);
-        $('#create-post-popup').addClass('open-popup');
+    // Abrir pop-up de troca de livro
+    $('.swap-book-btn').click(function() {
+        var postId = $(this).data('id');
+        var imageUrl = $(this).data('image');
+        $('#id_post').val(postId);
+        $('#imagem_post').attr('src', imageUrl);
+        $('#swap-book-popup').addClass('open-popup');
     });
 
-    // Fechar pop-up de criar post
-    $('#close-create-post-popup').click(function() {
-        $('#create-post-popup').removeClass('open-popup');
+    // Fechar pop-up de troca de livro
+    $('#close-swap-book-popup').click(function() {
+        $('#swap-book-popup').removeClass('open-popup');
     });
 });

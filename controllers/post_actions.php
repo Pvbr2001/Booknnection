@@ -17,26 +17,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_user = $_SESSION['user_id'];
 
         if ($post->curtirPost($id_post, $id_user)) {
-            echo "<script>alert('Post curtido com sucesso'); window.location.href = document.referrer;</script>";
+            echo json_encode(['status' => 'success', 'message' => 'Post curtido com sucesso']);
         } else {
-            echo "<script>alert('Erro ao curtir post'); window.location.href = document.referrer;</script>";
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao curtir post']);
         }
     } elseif ($acao === 'salvar_post') {
         $id_usuario = $_SESSION['user_id'];
         $id_post = $_POST['id_post'];
 
         if ($post->salvarPost($id_usuario, $id_post)) {
-            echo "<script>alert('Post salvo com sucesso'); window.location.href = document.referrer;</script>";
+            echo json_encode(['status' => 'success', 'message' => 'Post salvo com sucesso']);
         } else {
-            echo "<script>alert('Erro ao salvar post'); window.location.href = document.referrer;</script>";
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao salvar post']);
         }
     } elseif ($acao === 'trocar_livro') {
         $id_post = $_POST['id_post'];
         $id_usuario_atual = $_SESSION['user_id'];
 
-        // Verifique se o ID do post e o ID do usuário atual são válidos
+        // Verificar se o ID do post e o ID do usuário atual são válidos
         if (empty($id_post) || empty($id_usuario_atual)) {
-            echo "<script>alert('Erro: Dados inválidos.'); window.location.href = document.referrer;</script>";
+            echo json_encode(['status' => 'error', 'message' => 'Erro: Dados inválidos.']);
             exit;
         }
 
@@ -60,20 +60,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt) {
             $stmt->bind_param("iii", $id_usuario_dono, $id_usuario_atual, $id_post); // Passando o id do emissor
             if ($stmt->execute()) {
-                echo "<script>alert('Notificação enviada com sucesso para o dono do post!'); window.location.href = document.referrer;</script>";
+                echo json_encode(['status' => 'success', 'message' => 'Notificação enviada com sucesso para o dono do post!']);
             } else {
-                echo "<script>alert('Erro ao enviar notificação: " . $stmt->error . "'); window.location.href = document.referrer;</script>";
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao enviar notificação: ' . $stmt->error]);
             }
             $stmt->close();
         } else {
-            echo "<script>alert('Erro ao preparar a consulta: " . $conn->error . "'); window.location.href = document.referrer;</script>";
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao preparar a consulta: ' . $conn->error]);
+        }
+
+        $conn->close();
+    } elseif ($acao === 'adicionar_comentario') {
+        $id_post = $_POST['id_post'];
+        $id_usuario = $_SESSION['user_id'];
+        $comentario = $_POST['comentario'];
+
+        // Obter a instância da conexão com o banco de dados
+        $database = Database::getInstance();
+        $conn = $database->getConnection();
+
+        // Inserir o comentário no banco de dados
+        $sql = "INSERT INTO comentarios (id_post, id_usuario, texto) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt) {
+            $stmt->bind_param("iis", $id_post, $id_usuario, $comentario);
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Comentário adicionado com sucesso!']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao adicionar comentário: ' . $stmt->error]);
+            }
+            $stmt->close();
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao preparar a consulta: ' . $conn->error]);
         }
 
         $conn->close();
     } else {
-        echo "<script>alert('Ação inválida'); window.location.href = document.referrer;</script>";
+        echo json_encode(['status' => 'error', 'message' => 'Ação inválida']);
     }
 } else {
-    echo "<script>alert('Método de requisição inválido'); window.location.href = document.referrer;</script>";
+    echo json_encode(['status' => 'error', 'message' => 'Método de requisição inválido']);
 }
 ?>

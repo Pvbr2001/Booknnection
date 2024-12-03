@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Função para abrir o pop-up de troca de livro
-    const swapBookBtns = document.querySelectorAll('#swap-book-btn');
+    const swapBookBtns = document.querySelectorAll('.swap-book-btn');
     const swapBookPopup = document.getElementById("swap-book-popup");
     const closeSwapBookPopup = document.getElementById("close-swap-book-popup");
 

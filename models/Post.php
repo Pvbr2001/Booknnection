@@ -50,7 +50,7 @@ class Post {
         $stmtCheck->bind_param('ii', $id_usuario, $id_post);
         $stmtCheck->execute();
         $resultCheck = $stmtCheck->get_result();
-    
+
         if ($resultCheck->num_rows > 0) {
             // Se já curtiu, remover curtida
             $sqlDelete = "DELETE FROM curtidas WHERE id_usuario = ? AND id_post = ?";
@@ -65,8 +65,6 @@ class Post {
             return $stmtInsert->execute();
         }
     }
-    
-    
 
     // Function to save a post
     public function salvarPost($id_usuario, $id_post) {
@@ -76,7 +74,7 @@ class Post {
         $stmtCheck->bind_param('ii', $id_usuario, $id_post);
         $stmtCheck->execute();
         $resultCheck = $stmtCheck->get_result();
-    
+
         if ($resultCheck->num_rows > 0) {
             // Se já salvou, remover o post salvo
             $sqlDelete = "DELETE FROM posts_salvos WHERE id_usuario = ? AND id_post = ?";
@@ -129,6 +127,25 @@ class Post {
         return $posts;
     }
 
+    // Function to display a post by its ID
+    public function exibirPostPorId($id_post) {
+        $sql = "SELECT p.id, p.titulo, p.descricao, l.caminho_capa, u.nome
+                FROM posts p
+                JOIN livros l ON p.id_livro = l.id
+                JOIN usuario u ON p.id_usuario = u.id
+                WHERE p.id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_post);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null;
+        }
+    }
+
     public function getNome($id_post) {
         // Query the database to retrieve the post owner's name
         $sql = "SELECT nome FROM usuario WHERE id = (SELECT id_usuario FROM posts WHERE id = ?)";
@@ -149,4 +166,5 @@ class Post {
         $titulo = $result->fetch_assoc()['titulo'];
         return $titulo;
     }
+
 }

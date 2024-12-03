@@ -33,7 +33,6 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
     <title>Booknnection - Perfil</title>
     <!-- Inclusão de estilos CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="../public/estilos_css/popup.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="../public/estilos_css/perfil.css">
 </head>
@@ -305,9 +304,9 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 </div>
 
 <!-- Popup de adicionar livro -->
-<div id="popup" class="popup-container">
+<div id="add-book-popup" class="popup-container">
     <div class="popup-content form-container">
-        <span id="close-popup" class="popup-close">&times;</span>
+        <span id="close-add-book-popup" class="popup-close">&times;</span>
         <h2>Adicionar Livro</h2>
         <form action="../controllers/user_controller.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="acao" value="adicionar_livro">
@@ -396,3 +395,4 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 
 </body>
 </html>
+
