@@ -60,7 +60,7 @@ if (isset($_SESSION['user_id'])) {
                 </div>
                 <div class="floating-label">
                     <input type="password" name="confirmar_senha" placeholder=" " required>
-                    <label for="confirmar_senha">Confirme a Senha</label>
+                    <label for="confirmar_senha">Confirmar Senha</label>
                 </div>
                 <div class="floating-label">
                     <input type="text" name="cpf" placeholder=" " required>
@@ -68,11 +68,15 @@ if (isset($_SESSION['user_id'])) {
                 </div>
                 <div class="floating-label">
                     <input type="text" name="endereco" placeholder=" " required>
-                    <label for="endereco">Endereço</label>
+                    <label for="endereco">Endereço</label>
                 </div>
                 <div class="floating-label">
                     <input type="text" name="cidade" placeholder=" " required>
                     <label for="cidade">Cidade</label>
+                </div>
+                <div class="floating-label">
+                    <input type="text" name="telefone" placeholder=" " required>
+                    <label for="telefone">Telefone</label>
                 </div>
                 <select name="account_type" class="floating-label" required>
                     <option value="fisica">Pessoa Física</option>
@@ -143,21 +147,3 @@ if (isset($_SESSION['user_id'])) {
     </script>
 </body>
 </html>
-
-
-
-<script type="module">
-    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3.12/dist/web.js'
-  
-    Typebot.initBubble({
-      typebot: "suporte-ao-cliente-squxxd3",
-      apiHost: "http://34.132.245.158:8080",
-      previewMessage: { message: "Está precisando de ajuda?", autoShowDelay: 5000 },
-      theme: {
-        button: { backgroundColor: "#0042DA" },
-        chatWindow: { backgroundColor: "#fff" },
-      },
-    });
-  </script>
-
-  

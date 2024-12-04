@@ -96,6 +96,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $conn->close();
+    } elseif ($acao === 'aceitar_troca') {
+        $id_post = $_POST['id_post'];
+        $id_usuario_atual = $_SESSION['user_id'];
+
+        // Obter a instância da conexão com o banco de dados
+        $database = Database::getInstance();
+        $conn = $database->getConnection();
+
+        // Buscar o ID do dono do post (usuário 2)
+        $sql_dono_post = "SELECT id_usuario FROM posts WHERE id = ?";
+        $stmt = $conn->prepare($sql_dono_post);
+        $stmt->bind_param("i", $id_post);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $post_dono = $result->fetch_assoc();
+        $id_usuario_dono = $post_dono['id_usuario'];  // Dono do post (usuário 2)
+
+        // Buscar o ID do livro do post
+        $sql_livro_post = "SELECT id_livro FROM posts WHERE id = ?";
+        $stmt = $conn->prepare($sql_livro_post);
+        $stmt->bind_param("i", $id_post);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $livro_post = $result->fetch_assoc();
+        $id_livro_post = $livro_post['id_livro'];  // ID do livro do post
+
+        // Buscar o ID do livro do usuário atual
+        $sql_livro_usuario = "SELECT id_livro FROM lista_livros WHERE id_usuario = ? LIMIT 1";
+        $stmt = $conn->prepare($sql_livro_usuario);
+        $stmt->bind_param("i", $id_usuario_atual);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $livro_usuario = $result->fetch_assoc();
+        $id_livro_usuario = $livro_usuario['id_livro'];  // ID do livro do usuário atual
+
+        // Trocar os livros entre os usuários
+        $sql_troca = "UPDATE lista_livros SET id_livro = CASE
+                        WHEN id_usuario = ? THEN ?
+                        WHEN id_usuario = ? THEN ?
+                      END
+                      WHERE id_usuario IN (?, ?)";
+        $stmt = $conn->prepare($sql_troca);
+        $stmt->bind_param("iiiiii", $id_usuario_atual, $id_livro_post, $id_usuario_dono, $id_livro_usuario, $id_usuario_atual, $id_usuario_dono);
+
+        if ($stmt->execute()) {
+            // Excluir as notificações relacionadas ao post
+            $sql_excluir_notificacoes = "DELETE FROM notificacoes WHERE id_post = ?";
+            $stmt = $conn->prepare($sql_excluir_notificacoes);
+            $stmt->bind_param("i", $id_post);
+            if ($stmt->execute()) {
+                // Excluir o post após a troca
+                $sql_excluir_post = "DELETE FROM posts WHERE id = ?";
+                $stmt = $conn->prepare($sql_excluir_post);
+                $stmt->bind_param("i", $id_post);
+                if ($stmt->execute()) {
+                    echo json_encode(['status' => 'success', 'message' => 'Troca realizada com sucesso e post excluído!']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir o post: ' . $stmt->error]);
+                }
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir notificações: ' . $stmt->error]);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao realizar a troca: ' . $stmt->error]);
+        }
+
+        $stmt->close();
+        $conn->close();
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Ação inválida']);
     }

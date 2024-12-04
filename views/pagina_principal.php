@@ -141,11 +141,11 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                                         <i class="material-icons">thumb_up</i> Curtir (<?= $curtidas; ?>)
                                                     </button>
                                                 </form>
-                                                <form action="../controllers/post_actions.php" method="POST" style="display:inline;" id="swap-book-form">
+                                                <form action="../controllers/post_actions.php" method="POST" style="display:inline;" id="send-request-form">
                                                     <input type="hidden" name="acao" value="trocar_livro">
                                                     <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
-                                                    <button type="button" id="swap-book-btn" class="btn btn-secondary ml-2 swap-book-btn" data-image="<?= htmlspecialchars($post['caminho_capa']); ?>">
-                                                        <i class="material-icons">swap_horiz</i> Trocar Livro
+                                                    <button type="button" id="send-request-btn" class="btn btn-secondary ml-2 send-request-btn" data-image="<?= htmlspecialchars($post['caminho_capa']); ?>">
+                                                        <i class="material-icons">swap_horiz</i> Enviar Solicitação
                                                     </button>
                                                 </form>
                                                 <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
@@ -206,11 +206,11 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                 </form>
                             </div>
                         </div>
-                        <div id="swap-book-popup" class="popup-container">
+                        <div id="send-request-popup" class="popup-container">
                             <div class="popup-content">
-                                <span id="close-swap-book-popup" class="popup-close">&times;</span>
-                                <h2>Trocar Livro</h2>
-                                <form id="swap-book-form" action="../controllers/post_actions.php" method="POST" enctype="multipart/form-data">
+                                <span id="close-send-request-popup" class="popup-close">&times;</span>
+                                <h2>Enviar Solicitação</h2>
+                                <form id="send-request-form" action="../controllers/post_actions.php" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="acao" value="trocar_livro">
                                     <input type="hidden" name="id_post" id="id_post" value="">
                                     <div class="post-info">
@@ -218,10 +218,6 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                         <h1>Usuário atual: <span id="current-user"><?php echo $user->getNome(); ?></span> </h1>
                                         <h1>Dono do post: <span id="post-owner"><?php echo $post['nome']; ?></span> </h1>
                                     </div>
-                                    <label for="livro_para_trocar">Livro para Trocar:</label>
-                                    <select name="livro_para_trocar" id="livro_para_trocar" required>
-                                        <!-- Os livros do usuário serão carregados aqui -->
-                                    </select>
                                     <button type="submit" class="green-button">Confirmar</button>
                                 </form>
                             </div>
@@ -250,8 +246,6 @@ $posts = $post->exibirPostsPorCidade($cidade);
                             <div class="sidebar-section">
                                 <ul>
                                     <?php
-                                    $database = Database::getInstance();
-                                    $conn = $database->getConnection();
                                     $id_usuario = $_SESSION['user_id'];
                                     $sql = "SELECT u.nome AS nome_usuario, ue.nome AS nome_usuario_emissor, p.titulo AS titulo_post, l.caminho_capa AS caminho_capa, n.id_post
                                             FROM notificacoes n
@@ -269,14 +263,51 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                         while ($row = $result->fetch_assoc()) {
                                             echo "<li class='notification-item' data-id='" . htmlspecialchars($row['id_post']) . "' data-image='" . htmlspecialchars($row['caminho_capa']) . "'>";
                                             echo "<strong>" . htmlspecialchars($row['nome_usuario_emissor']) . "</strong> solicitou uma troca para o livro: ";
-                                            echo "<a href='#'>" . htmlspecialchars($row['titulo_post']) . "</a>";
+                                            echo "<a href='troca_processo.php?id_post=" . htmlspecialchars($row['id_post']) . "'>" . htmlspecialchars($row['titulo_post']) . "</a>";
                                             echo "</li>";
                                         }
                                     } else {
                                         echo "<li>Nenhuma notificação recente.</li>";
                                     }
                                     $stmt->close();
-                                    $conn->close();
+                                    ?>
+                                </ul>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header toggle-header card-title-no-underline" data-target="solicitacoes">
+                        Solicitações Enviadas
+                    </div>
+                    <div class="card-body" id="solicitacoes">
+                        <aside class="sidebar-right">
+                            <div class="sidebar-section">
+                                <ul>
+                                    <?php
+                                    $sql = "SELECT u.nome AS nome_usuario, ue.nome AS nome_usuario_emissor, p.titulo AS titulo_post, l.caminho_capa AS caminho_capa, n.id_post
+                                            FROM notificacoes n
+                                            JOIN posts p ON p.id = n.id_post
+                                            JOIN usuario u ON u.id = n.id_usuario
+                                            JOIN usuario ue ON ue.id = n.id_usuario_emissor
+                                            JOIN livros l ON p.id_livro = l.id
+                                            WHERE n.id_usuario_emissor = ?
+                                            ORDER BY n.data_criacao DESC";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->bind_param("i", $id_usuario);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            echo "<li class='notification-item' data-id='" . htmlspecialchars($row['id_post']) . "' data-image='" . htmlspecialchars($row['caminho_capa']) . "'>";
+                                            echo "<strong>" . htmlspecialchars($row['nome_usuario']) . "</strong> solicitou uma troca para o livro: ";
+                                            echo "<a href='troca_processo.php?id_post=" . htmlspecialchars($row['id_post']) . "'>" . htmlspecialchars($row['titulo_post']) . "</a>";
+                                            echo "</li>";
+                                        }
+                                    } else {
+                                        echo "<li>Nenhuma solicitação enviada.</li>";
+                                    }
+                                    $stmt->close();
                                     ?>
                                 </ul>
                             </div>
@@ -303,9 +334,8 @@ $posts = $post->exibirPostsPorCidade($cidade);
     </footer>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../public/adicionar_livro.js"></script>
-    <script src="../public/trocar_livro.js"></script>
+    <script src="../public/enviar_request.js"></script>
     <script src="../public/toggle.js"></script>
-    <script src="../public/notificacoes.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>

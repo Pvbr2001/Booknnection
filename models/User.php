@@ -18,6 +18,7 @@ class User {
     private $endereco;
     private $cidade;
     private $account_type;
+    private $telefone;
 
     public function __construct() {
         $database = Database::getInstance();
@@ -26,7 +27,7 @@ class User {
     }
 
     // Função para registrar um usuário, criptografando dados pessoais como senha e CPF
-    public function register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade) {
+    public function register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade, $telefone) {
         if ($this->userExists($email)) {
             return 'UserExists';
         }
@@ -39,9 +40,9 @@ class User {
         $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
 
         // Inserir no banco de dados
-        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco, cidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpf, endereco, cidade, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param('sssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade);
+        $stmt->bind_param('ssssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade, $telefone);
 
         if ($stmt->execute()) {
             return 'Success';
@@ -63,7 +64,7 @@ class User {
 
     // Função para login, descriptografando a senha
     public function login($email, $senha) {
-        $sql = "SELECT id, senha, nome, email, account_type, cpf_cnpf, endereco, cidade FROM usuario WHERE email = ?";
+        $sql = "SELECT id, senha, nome, email, account_type, cpf_cnpf, endereco, cidade, telefone FROM usuario WHERE email = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('s', $email);
         $stmt->execute();
@@ -73,7 +74,7 @@ class User {
             return false;
         }
 
-        $stmt->bind_result($id, $senhaCriptografada, $nome, $email, $account_type, $cpf_cnpf, $endereco, $cidade);
+        $stmt->bind_result($id, $senhaCriptografada, $nome, $email, $account_type, $cpf_cnpf, $endereco, $cidade, $telefone);
         $stmt->fetch();
 
         $senhaDescriptografada = openssl_decrypt($senhaCriptografada, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
@@ -87,6 +88,7 @@ class User {
             $this->endereco = $endereco;
             $this->cidade = $cidade;
             $this->account_type = $account_type;
+            $this->telefone = $telefone;
             return true;
         }
 
@@ -95,14 +97,14 @@ class User {
 
     // Função para carregar informações do usuário por ID
     public function loadById($id) {
-        $sql = "SELECT id, nome, email, account_type, cpf_cnpf, endereco, cidade FROM usuario WHERE id = ?";
+        $sql = "SELECT id, nome, email, account_type, cpf_cnpf, endereco, cidade, telefone FROM usuario WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $stmt->bind_result($id, $nome, $email, $account_type, $cpf_cnpf, $endereco, $cidade);
+            $stmt->bind_result($id, $nome, $email, $account_type, $cpf_cnpf, $endereco, $cidade, $telefone);
             $stmt->fetch();
 
             $this->id = $id;
@@ -113,6 +115,7 @@ class User {
             $this->endereco = $endereco;
             $this->cidade = $cidade;
             $this->account_type = $account_type;
+            $this->telefone = $telefone;
         }
     }
 
@@ -147,6 +150,10 @@ class User {
 
     public function getAccountType() {
         return $this->account_type;
+    }
+
+    public function getTelefone() {
+        return $this->telefone;
     }
 
     // Função para verificar se o ISBN já está registrado
@@ -193,4 +200,11 @@ class User {
         return $livros;
     }
 
+    // Função para atualizar o telefone do usuário
+    public function atualizarTelefone($id_usuario, $telefone) {
+        $sql = "UPDATE usuario SET telefone = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('si', $telefone, $id_usuario);
+        return $stmt->execute();
+    }
 }

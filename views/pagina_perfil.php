@@ -272,8 +272,8 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
                         $sql = "SELECT u.nome AS nome_usuario, ue.nome AS nome_usuario_emissor, p.titulo AS titulo_post
                                 FROM notificacoes n
                                 JOIN posts p ON p.id = n.id_post
-                                JOIN usuario u ON u.id = n.id_usuario -- Referência do usuário que receberá a notificação
-                                JOIN usuario ue ON ue.id = n.id_usuario_emissor -- Referência do usuário que enviou a notificação
+                                JOIN usuario u ON u.id = n.id_usuario
+                                JOIN usuario ue ON ue.id = n.id_usuario_emissor
                                 WHERE n.id_usuario = ?
                                 ORDER BY n.data_criacao DESC";
                         $stmt = $conn->prepare($sql);
@@ -310,37 +310,30 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
         <h2>Adicionar Livro</h2>
         <form action="../controllers/user_controller.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="acao" value="adicionar_livro">
-
             <div class="floating-label">
                 <input type="text" name="titulo" id="titulo" required>
                 <label for="titulo">Título do livro</label>
             </div>
-
             <div class="floating-label">
                 <input type="text" name="autor" id="autor" required>
                 <label for="autor">Autor</label>
             </div>
-
             <div class="floating-label">
                 <input type="text" name="isbn" id="isbn" required>
                 <label for="isbn">ISBN</label>
             </div>
-
             <div class="floating-label">
                 <input type="text" name="capa_tipo" id="capa_tipo">
                 <label for="capa_tipo">Tipo de Capa</label>
             </div>
-
             <div class="floating-label">
                 <input type="number" name="ano_lancamento" id="ano_lancamento" required>
                 <label for="ano_lancamento">Ano de Lançamento</label>
             </div>
-
             <div class="floating-label">
                 <input type="file" name="capa" id="capa">
                 <label for="capa">Capa do Livro</label>
             </div>
-
             <button type="submit" class="btn-submit">Adicionar Livro ao Banco</button>
             <button type="submit" name="adicionar_lista" value="1" class="btn-submit">Adicionar Livro ao Banco e à Lista</button>
             <a href="#" id="show-isbn-search">Pesquisar por ISBN</a>
@@ -380,6 +373,20 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
     </div>
 </div>
 
+<!-- Pop-up para atualizar telefone -->
+<div id="update-telefone-popup" class="popup-container">
+    <div class="popup-content">
+        <span id="close-update-telefone-popup" class="popup-close">&times;</span>
+        <h2>Atualizar Telefone</h2>
+        <form action="../controllers/user_controller.php" method="POST">
+            <input type="hidden" name="acao" value="atualizar_telefone">
+            <label for="telefone">Telefone:</label>
+            <input type="text" name="telefone" id="telefone" required>
+            <button type="submit">Atualizar</button>
+        </form>
+    </div>
+</div>
+
 <footer class="footer">
     <p>Desenvolvido Para TCC Senai</p>
 </footer>
@@ -395,4 +402,3 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
 
 </body>
 </html>
-

@@ -55,11 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cpf_cnpf = $_POST['cpf_cnpf'] ?? '';
         $endereco = $_POST['endereco'] ?? '';
         $cidade = $_POST['cidade'] ?? '';
+        $telefone = $_POST['telefone'] ?? '';
 
         if ($senha !== $confirmarSenha) {
             echo 'PasswordsDoNotMatch';
         } else {
-            $result = $user->register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade);
+            $result = $user->register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade, $telefone);
             echo $result;
         }
     } elseif ($acao === 'adicionar_livro') {
@@ -135,6 +136,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<script>alert('Post salvo com sucesso');</script>";
         } else {
             echo "<script>alert('Erro ao salvar o post');</script>";
+        }
+    } elseif ($acao === 'atualizar_telefone') {
+        $id_usuario = $_SESSION['user_id'];
+        $telefone = $_POST['telefone'];
+
+        if ($user->atualizarTelefone($id_usuario, $telefone)) {
+            echo "<script>alert('Telefone atualizado com sucesso');</script>";
+        } else {
+            echo "<script>alert('Erro ao atualizar o telefone');</script>";
+        }
+    } elseif ($acao === 'finalizar_troca') {
+        $id_post = $_POST['id_post'];
+        $id_usuario = $_SESSION['user_id'];
+
+        // Verificar se a troca já está finalizada
+        $sql = "SELECT status FROM trocas WHERE id_post = ? AND (id_usuario_solicitante = ? OR id_usuario_dono = ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iii", $id_post, $id_usuario, $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $troca = $result->fetch_assoc();
+
+        if ($troca && $troca['status'] === 'finalizada') {
+            echo json_encode(['status' => 'error', 'message' => 'Troca já finalizada.']);
+        } else {
+            // Atualizar o status da troca
+            $sql = "UPDATE trocas SET status = 'finalizada' WHERE id_post = ? AND (id_usuario_solicitante = ? OR id_usuario_dono = ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iii", $id_post, $id_usuario, $id_usuario);
+            $stmt->execute();
+
+            // Verificar se ambos os usuários finalizaram a troca
+            $sql = "SELECT COUNT(*) as total FROM trocas WHERE id_post = ? AND status = 'finalizada'";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id_post);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $total = $result->fetch_assoc()['total'];
+
+            if ($total == 2) {
+                // Remover o post e os livros associados
+                $sql = "DELETE FROM posts WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $id_post);
+                $stmt->execute();
+
+                $sql = "DELETE FROM lista_livros WHERE id_livro = (SELECT id_livro FROM posts WHERE id = ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $id_post);
+                $stmt->execute();
+
+                echo json_encode(['status' => 'success', 'message' => 'Troca finalizada com sucesso.']);
+            } else {
+                echo json_encode(['status' => 'success', 'message' => 'Troca confirmada. Aguardando o outro usuário.']);
+            }
         }
     } else {
         echo 'InvalidAction';

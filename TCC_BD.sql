@@ -10,6 +10,7 @@ CREATE TABLE usuario (
     account_type ENUM('fisica', 'juridica') NOT NULL,
     cpf_cnpf VARBINARY(255) NOT NULL UNIQUE,
     endereco VARCHAR(100) NOT NULL,
+    telefone VARCHAR(20),
     cidade VARCHAR(100) NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -84,6 +85,18 @@ CREATE TABLE notificacoes (
     FOREIGN KEY (id_usuario) REFERENCES usuario(id),
     FOREIGN KEY (id_usuario_emissor) REFERENCES usuario(id), -- Adicionando a relação com o usuário emissor
     FOREIGN KEY (id_post) REFERENCES posts(id)
+);
+
+CREATE TABLE trocas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_post INT NOT NULL,
+    id_usuario_solicitante INT NOT NULL,
+    id_usuario_dono INT NOT NULL,
+    status ENUM('pendente', 'finalizada') DEFAULT 'pendente',
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_post) REFERENCES posts(id),
+    FOREIGN KEY (id_usuario_solicitante) REFERENCES usuario(id),
+    FOREIGN KEY (id_usuario_dono) REFERENCES usuario(id)
 );
 
 
