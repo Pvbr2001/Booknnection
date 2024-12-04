@@ -2,15 +2,15 @@
 session_start();
 require_once '../models/user.php';
 require_once '../models/post.php';
-require_once '../config/database.php'; // Incluir o arquivo de configuração do banco de dados
+require_once '../config/database.php';
 
 // Verifica se é uma requisição GET para o logout ou check_auth
 if (isset($_GET['acao'])) {
     if ($_GET['acao'] === 'logout') {
         // Destruir a sessão e redirecionar para a página de login
-        session_unset(); // Limpa todas as variáveis de sessão
-        session_destroy(); // Destrói a sessão
-        header("Location: ../views/pagina_login.php"); // Redireciona para a página de login
+        session_unset();
+        session_destroy();
+        header("Location: ../views/pagina_login.php");
         exit();
     } elseif ($_GET['acao'] === 'check_auth') {
         // Verifica a autenticação do usuário
@@ -21,7 +21,7 @@ if (isset($_GET['acao'])) {
         } else {
             header('Location: ../views/pagina_login.php');
         }
-        exit(); // Para evitar que o resto do código seja executado
+        exit();
     }
 }
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $senha = $_POST['senha'] ?? '';
         $confirmarSenha = $_POST['confirmar_senha'] ?? '';
         $account_type = $_POST['account_type'] ?? '';
-        $cpf_cnpf = $_POST['cpf_cnpf'] ?? '';
+        $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
         $endereco = $_POST['endereco'] ?? '';
         $cidade = $_POST['cidade'] ?? '';
         $telefone = $_POST['telefone'] ?? '';
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($senha !== $confirmarSenha) {
             echo 'PasswordsDoNotMatch';
         } else {
-            $result = $user->register($nome, $email, $senha, $account_type, $cpf_cnpf, $endereco, $cidade, $telefone);
+            $result = $user->register($nome, $email, $senha, $account_type, $cpf_cnpj, $endereco, $cidade, $telefone);
             echo $result;
         }
     } elseif ($acao === 'adicionar_livro') {
@@ -191,6 +191,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo json_encode(['status' => 'success', 'message' => 'Troca confirmada. Aguardando o outro usuário.']);
             }
+        }
+    } elseif ($acao === 'alterar_foto_perfil') {
+        $id_usuario = $_SESSION['user_id'];
+        $caminhoFoto = null;
+
+        if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+            $extensao = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
+            $caminhoFoto = '../public/imagens/' . uniqid().rand(0, 100000) . '.' . $extensao;
+            move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $caminhoFoto);
+        }
+
+        if ($user->alterarFotoPerfil($id_usuario, $caminhoFoto)) {
+            echo "<script>alert('Foto de perfil alterada com sucesso');</script>";
+        } else {
+            echo "<script>alert('Erro ao alterar a foto de perfil');</script>";
+        }
+    } elseif ($acao === 'trocar_senha') {
+        $id_usuario = $_SESSION['user_id'];
+        $senhaAtual = $_POST['senha_atual'];
+        $novaSenha = $_POST['nova_senha'];
+
+        if ($user->trocarSenha($id_usuario, $senhaAtual, $novaSenha)) {
+            echo "<script>alert('Senha alterada com sucesso');</script>";
+        } else {
+            echo "<script>alert('Senha atual incorreta');</script>";
+        }
+    } elseif ($acao === 'desativar_conta') {
+        $id_usuario = $_SESSION['user_id'];
+
+        if ($user->desativarConta($id_usuario)) {
+            session_unset();
+            session_destroy();
+            echo "<script>alert('Conta desativada com sucesso. Todas as informações foram apagadas de forma permanente.');</script>";
+            echo "<script>window.location.href = '../views/pagina_login.php';</script>";
+        } else {
+            echo "<script>alert('Erro ao desativar a conta');</script>";
         }
     } else {
         echo 'InvalidAction';

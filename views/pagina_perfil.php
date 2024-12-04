@@ -133,7 +133,7 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
                 </div>
                 <div class="profile-info">
                     <div class="profile-avatar">
-                        <img src="../public/imagens/Corgi.png" alt="Avatar do Usuário" class="rounded-circle">
+                        <img src="<?php echo htmlspecialchars($user->getFotoPerfil()); ?>" alt="Avatar do Usuário" class="rounded-circle">
                     </div>
                     <div class="profile-details">
                         <h2><?php echo $user->getUsername(); ?></h2>

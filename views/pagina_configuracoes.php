@@ -1,25 +1,3 @@
-<?php
-session_start();
-
-// Required files
-require_once '../models/user.php';
-require_once '../config/database.php';
-
-// Redirect to authentication check if user is not logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../controllers/user_controller.php?acao=check_auth");
-    exit();
-}
-
-// Database connection
-$database = new Database();
-$conn = $database->getConnection();
-
-// Load user
-$user = new User();
-$user->loadById($_SESSION['user_id']);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -85,6 +63,19 @@ $user->loadById($_SESSION['user_id']);
             width: 100%;
             bottom: 0;
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .toggle-header {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-header:hover {
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -124,10 +115,10 @@ $user->loadById($_SESSION['user_id']);
 
     <div class="container">
         <div class="card">
-            <div class="card-header">
-                <h2>Configurações</h2>
+            <div class="card-header toggle-header" data-target="alterar-foto-perfil">
+                <h2>Alterar Foto de Perfil</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body hidden" id="alterar-foto-perfil">
                 <form action="../controllers/user_controller.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="acao" value="alterar_foto_perfil">
                     <div class="form-group">
@@ -136,7 +127,12 @@ $user->loadById($_SESSION['user_id']);
                     </div>
                     <button type="submit" class="btn btn-primary">Alterar Foto</button>
                 </form>
-                <hr>
+            </div>
+            <hr>
+            <div class="card-header toggle-header" data-target="trocar-senha">
+                <h2>Trocar Senha</h2>
+            </div>
+            <div class="card-body hidden" id="trocar-senha">
                 <form action="../controllers/user_controller.php" method="POST">
                     <input type="hidden" name="acao" value="trocar_senha">
                     <div class="form-group">
@@ -149,8 +145,13 @@ $user->loadById($_SESSION['user_id']);
                     </div>
                     <button type="submit" class="btn btn-primary">Trocar Senha</button>
                 </form>
-                <hr>
-                <form action="../controllers/user_controller.php" method="POST">
+            </div>
+            <hr>
+            <div class="card-header toggle-header" data-target="desativar-conta">
+                <h2>Desativar Conta</h2>
+            </div>
+            <div class="card-body hidden" id="desativar-conta">
+                <form action="../controllers/user_controller.php" method="POST" onsubmit="return confirmDesativarConta();">
                     <input type="hidden" name="acao" value="desativar_conta">
                     <button type="submit" class="btn btn-danger">Desativar Conta</button>
                 </form>
@@ -162,8 +163,8 @@ $user->loadById($_SESSION['user_id']);
         <p>Desenvolvido Para TCC Senai</p>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
         integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
@@ -171,6 +172,19 @@ $user->loadById($_SESSION['user_id']);
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            // Alternar visibilidade dos elementos com a classe toggle-header
+            $('.toggle-header').click(function() {
+                var target = $(this).data('target');
+                $('#' + target).toggle();
+            });
+        });
+
+        function confirmDesativarConta() {
+            return confirm('Tem certeza de que deseja desativar sua conta? Esta ação irá apagar todas as informações da conta de forma permanente.');
+        }
+    </script>
 </body>
 
 </html>
