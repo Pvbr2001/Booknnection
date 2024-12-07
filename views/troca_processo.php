@@ -31,6 +31,32 @@ $result = $stmt->get_result();
 $emissor_info = $result->fetch_assoc();
 
 $livros_usuario = $user->exibirLivrosFeed($_SESSION['user_id']);
+
+// Verificar se o usuário atual é o dono do post ou o solicitante
+$sql_check_owner = "SELECT id_usuario FROM posts WHERE id = ?";
+$stmt_check_owner = $conn->prepare($sql_check_owner);
+$stmt_check_owner->bind_param("i", $id_post);
+$stmt_check_owner->execute();
+$result_check_owner = $stmt_check_owner->get_result();
+$post_owner_id = $result_check_owner->fetch_assoc()['id_usuario'];
+
+$is_owner = ($_SESSION['user_id'] == $post_owner_id);
+
+// Verificar o status da troca
+$sql_check_troca = "SELECT status FROM trocas WHERE id_post = ? AND (id_usuario_solicitante = ? OR id_usuario_dono = ?)";
+$stmt_check_troca = $conn->prepare($sql_check_troca);
+$stmt_check_troca->bind_param("iii", $id_post, $_SESSION['user_id'], $_SESSION['user_id']);
+$stmt_check_troca->execute();
+$result_check_troca = $stmt_check_troca->get_result();
+$troca_status = $result_check_troca->fetch_assoc()['status'] ?? null;
+
+// Verificar se ambos os usuários confirmaram a troca
+$sql_check_confirmacoes = "SELECT COUNT(*) as total FROM confirmacoes_troca WHERE id_post = ? AND confirmado = 1";
+$stmt_check_confirmacoes = $conn->prepare($sql_check_confirmacoes);
+$stmt_check_confirmacoes->bind_param("i", $id_post);
+$stmt_check_confirmacoes->execute();
+$result_check_confirmacoes = $stmt_check_confirmacoes->get_result();
+$total_confirmacoes = $result_check_confirmacoes->fetch_assoc()['total'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -87,24 +113,43 @@ $livros_usuario = $user->exibirLivrosFeed($_SESSION['user_id']);
                 <p class="card-text"><?= htmlspecialchars($post_info['descricao']); ?></p>
                 <div class="d-flex gap-2">
                     <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
-                        <input type="hidden" name="acao" value="aceitar_troca">
+                        <input type="hidden" name="acao" value="confirmar_troca">
                         <input type="hidden" name="id_post" value="<?= $post_info['id']; ?>">
                         <button class="btn btn-success" type="submit">
-                            <i class="material-icons">check</i> Aceitar Troca
+                            <i class="material-icons">check</i> Confirmar Troca
                         </button>
                     </form>
                     <a href="https://wa.me/<?= $emissor_info['telefone_emissor']; ?>" class="btn btn-primary ml-2">
                         <i class="material-icons">whatsapp</i> Entrar em Contato
                     </a>
-                    <button class="btn btn-danger finalizar-troca-btn" data-id-post="<?= $post_info['id']; ?>">
-                        <i class="material-icons">check</i> Finalizar Troca
-                    </button>
                 </div>
             </div>
             <div class="card-footer text-muted">
                 Postado por <a href="#"><?= htmlspecialchars($post_owner); ?></a> no dia <?= date('d/m/Y', strtotime($post_info['data_post'])); ?>
             </div>
         </div>
+        <?php if (!$is_owner && $troca_status !== 'finalizada'): ?>
+            <div class="card mb-4">
+                <div class="card-header">
+                    Selecione o livro para troca
+                </div>
+                <div class="card-body">
+                    <form action="../controllers/post_actions.php" method="POST">
+                        <input type="hidden" name="acao" value="selecionar_livro_troca">
+                        <input type="hidden" name="id_post" value="<?= $post_info['id']; ?>">
+                        <div class="form-group">
+                            <label for="livro_troca">Livro para troca</label>
+                            <select class="form-control" id="livro_troca" name="livro_troca">
+                                <?php foreach ($livros_usuario as $livro): ?>
+                                    <option value="<?= $livro['id']; ?>"><?= htmlspecialchars($livro['titulo']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Selecionar Livro</button>
+                    </form>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
     <footer class="footer">
         <p>Desenvolvido Para TCC Senai</p>

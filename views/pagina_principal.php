@@ -66,24 +66,6 @@ $posts = $post->exibirPostsPorCidade($cidade);
                     <div class="card-header toggle-header card-title-no-underline" data-target="categorias">
                         Categorias
                     </div>
-                    <div class="card-body" id="categorias">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <ul class="list-unstyled">
-                                    <li><a href="#">Web Design</a></li>
-                                    <li><a href="#">JavaScript</a></li>
-                                    <li><a href="#">CSS</a></li>
-                                </ul>
-                            </div>
-                            <div class="col-lg-6">
-                                <ul class="list-unstyled">
-                                    <li><a href="#">HTML</a></li>
-                                    <li><a href="#">React</a></li>
-                                    <li><a href="#">Node.js</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="card mb-4">
                     <div class="card-header toggle-header card-title-no-underline" data-target="topicos-populares">
@@ -99,15 +81,12 @@ $posts = $post->exibirPostsPorCidade($cidade);
                     </div>
                 </div>
                 <div class="card mb-4">
-                    <div class="card-header toggle-header card-title-no-underline" data-target="artigos-recentes">
-                        Artigos Recentes
+                    <div class="card-header toggle-header card-title-no-underline" data-target="ultimo-livro-trocado">
+                        &Uacute;ltimo Livro Trocado
                     </div>
-                    <div class="card-body" id="artigos-recentes">
-                        <ul class="list-unstyled">
-                            <li><a href="#">Aprenda como criar um site responsivo</a></li>
-                            <li><a href="#">3 coisas que você precisa saber sobre CSS</a></li>
-                            <li><a href="#">5 recursos para aprender JavaScript</a></li>
-                        </ul>
+                    <div class="card-body" id="ultimo-livro-trocado">
+                        <img class="img-fluid" src="../public/imagens/book-cover.jpg" alt="Capa do &Uacute;ltimo Livro Trocado" style="width: 50%; opacity: 0.5; margin: 0 auto;">
+                        <p class="mt-3">Ultimo livro trocado</p>
                     </div>
                 </div>
             </div>

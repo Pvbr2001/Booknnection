@@ -103,12 +103,22 @@ CREATE TABLE trocas (
     id_post INT NOT NULL,
     id_usuario_solicitante INT NOT NULL,
     id_usuario_dono INT NOT NULL,
-    status ENUM('pendente', 'finalizada') DEFAULT 'pendente',
+    status ENUM('pendente', 'confirmada', 'finalizada') DEFAULT 'pendente';
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_post) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario_solicitante) REFERENCES usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario_dono) REFERENCES usuario(id) ON DELETE CASCADE
 );
+
+CREATE TABLE confirmacoes_troca (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_post INT NOT NULL,
+    id_usuario INT NOT NULL,
+    confirmado BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_post) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
 
 -- Criar a view vw_notificacoes
 CREATE OR REPLACE VIEW vw_notificacoes AS

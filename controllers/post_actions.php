@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $conn->close();
-    } elseif ($acao === 'aceitar_troca') {
+    } elseif ($acao === 'confirmar_troca') {
         $id_post = $_POST['id_post'];
         $id_usuario_atual = $_SESSION['user_id'];
 
@@ -113,53 +113,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $post_dono = $result->fetch_assoc();
         $id_usuario_dono = $post_dono['id_usuario'];  // Dono do post (usuário 2)
 
-        // Buscar o ID do livro do post
-        $sql_livro_post = "SELECT id_livro FROM posts WHERE id = ?";
-        $stmt = $conn->prepare($sql_livro_post);
-        $stmt->bind_param("i", $id_post);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $livro_post = $result->fetch_assoc();
-        $id_livro_post = $livro_post['id_livro'];  // ID do livro do post
-
-        // Buscar o ID do livro do usuário atual
-        $sql_livro_usuario = "SELECT id_livro FROM lista_livros WHERE id_usuario = ? LIMIT 1";
-        $stmt = $conn->prepare($sql_livro_usuario);
-        $stmt->bind_param("i", $id_usuario_atual);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $livro_usuario = $result->fetch_assoc();
-        $id_livro_usuario = $livro_usuario['id_livro'];  // ID do livro do usuário atual
-
-        // Trocar os livros entre os usuários
-        $sql_troca = "UPDATE lista_livros SET id_livro = CASE
-                        WHEN id_usuario = ? THEN ?
-                        WHEN id_usuario = ? THEN ?
-                      END
-                      WHERE id_usuario IN (?, ?)";
-        $stmt = $conn->prepare($sql_troca);
-        $stmt->bind_param("iiiiii", $id_usuario_atual, $id_livro_post, $id_usuario_dono, $id_livro_usuario, $id_usuario_atual, $id_usuario_dono);
+        // Inserir ou atualizar a confirmação de troca
+        $sql_insert_confirmacao = "INSERT INTO confirmacoes_troca (id_post, id_usuario, confirmado) VALUES (?, ?, 1)
+                                   ON DUPLICATE KEY UPDATE confirmado = 1";
+        $stmt = $conn->prepare($sql_insert_confirmacao);
+        $stmt->bind_param("ii", $id_post, $id_usuario_atual);
 
         if ($stmt->execute()) {
-            // Excluir as notificações relacionadas ao post
-            $sql_excluir_notificacoes = "DELETE FROM notificacoes WHERE id_post = ?";
-            $stmt = $conn->prepare($sql_excluir_notificacoes);
+            // Verificar se ambos os usuários confirmaram a troca
+            $sql_check_confirmacoes = "SELECT COUNT(*) as total FROM confirmacoes_troca WHERE id_post = ? AND confirmado = 1";
+            $stmt = $conn->prepare($sql_check_confirmacoes);
             $stmt->bind_param("i", $id_post);
-            if ($stmt->execute()) {
-                // Excluir o post após a troca
-                $sql_excluir_post = "DELETE FROM posts WHERE id = ?";
-                $stmt = $conn->prepare($sql_excluir_post);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $total_confirmacoes = $result->fetch_assoc()['total'];
+
+            if ($total_confirmacoes == 2) {
+                // Ambos os usuários confirmaram a troca, finalizar a troca
+                $sql_finalizar_troca = "UPDATE trocas SET status = 'finalizada' WHERE id_post = ?";
+                $stmt = $conn->prepare($sql_finalizar_troca);
                 $stmt->bind_param("i", $id_post);
                 if ($stmt->execute()) {
-                    echo json_encode(['status' => 'success', 'message' => 'Troca realizada com sucesso e post excluído!']);
+                    // Excluir as notificações relacionadas ao post
+                    $sql_excluir_notificacoes = "DELETE FROM notificacoes WHERE id_post = ?";
+                    $stmt = $conn->prepare($sql_excluir_notificacoes);
+                    $stmt->bind_param("i", $id_post);
+                    if ($stmt->execute()) {
+                        // Excluir o post após a troca
+                        $sql_excluir_post = "DELETE FROM posts WHERE id = ?";
+                        $stmt = $conn->prepare($sql_excluir_post);
+                        $stmt->bind_param("i", $id_post);
+                        if ($stmt->execute()) {
+                            echo json_encode(['status' => 'success', 'message' => 'Troca finalizada com sucesso e post excluído!']);
+                        } else {
+                            echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir o post: ' . $stmt->error]);
+                        }
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir notificações: ' . $stmt->error]);
+                    }
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir o post: ' . $stmt->error]);
+                    echo json_encode(['status' => 'error', 'message' => 'Erro ao finalizar a troca: ' . $stmt->error]);
                 }
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir notificações: ' . $stmt->error]);
+                echo json_encode(['status' => 'success', 'message' => 'Troca confirmada. Aguardando o outro usuário.']);
             }
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Erro ao realizar a troca: ' . $stmt->error]);
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao confirmar a troca: ' . $stmt->error]);
+        }
+
+        $stmt->close();
+        $conn->close();
+    } elseif ($acao === 'selecionar_livro_troca') {
+        $id_post = $_POST['id_post'];
+        $id_livro_troca = $_POST['livro_troca'];
+        $id_usuario_atual = $_SESSION['user_id'];
+
+        // Obter a instância da conexão com o banco de dados
+        $database = Database::getInstance();
+        $conn = $database->getConnection();
+
+        // Atualizar o status da troca para 'confirmada'
+        $sql_update_troca = "UPDATE trocas SET status = 'confirmada', id_livro_solicitante = ? WHERE id_post = ? AND id_usuario_solicitante = ?";
+        $stmt = $conn->prepare($sql_update_troca);
+        $stmt->bind_param("iii", $id_livro_troca, $id_post, $id_usuario_atual);
+
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Livro selecionado para troca com sucesso!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao selecionar livro para troca: ' . $stmt->error]);
         }
 
         $stmt->close();
