@@ -144,7 +144,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt = $conn->prepare($sql_excluir_post);
                         $stmt->bind_param("i", $id_post);
                         if ($stmt->execute()) {
-                            echo json_encode(['status' => 'success', 'message' => 'Troca finalizada com sucesso e post excluído!']);
+                            // Trocar os livros entre os usuários
+                            $sql_trocar_livros = "UPDATE lista_livros SET id_usuario = CASE
+                                                    WHEN id_usuario = ? THEN ?
+                                                    WHEN id_usuario = ? THEN ?
+                                                  END
+                                                  WHERE id_livro IN (
+                                                    SELECT id_livro FROM lista_livros WHERE id_usuario = ? OR id_usuario = ?
+                                                  )";
+                            $stmt = $conn->prepare($sql_trocar_livros);
+                            $stmt->bind_param("iiiiii", $id_usuario_atual, $id_usuario_dono, $id_usuario_dono, $id_usuario_atual, $id_usuario_atual, $id_usuario_dono);
+                            if ($stmt->execute()) {
+                                echo json_encode(['status' => 'success', 'message' => 'Troca finalizada com sucesso e livros trocados!']);
+                            } else {
+                                echo json_encode(['status' => 'error', 'message' => 'Erro ao trocar livros: ' . $stmt->error]);
+                            }
                         } else {
                             echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir o post: ' . $stmt->error]);
                         }

@@ -40,10 +40,13 @@ class User {
         // Criptografar senha
         $senhaCriptografada = openssl_encrypt($senha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
 
+        // Definir a foto de perfil padrão
+        $fotoPerfil = 'icone-padrao.png';
+
         // Inserir no banco de dados
-        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpj, endereco, cidade, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO usuario (nome, email, senha, account_type, cpf_cnpj, endereco, cidade, telefone, foto_perfil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param('ssssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade, $telefone);
+        $stmt->bind_param('sssssssss', $nome, $email, $senhaCriptografada, $account_type, $cpfCnpjCriptografado, $endereco, $cidade, $telefone, $fotoPerfil);
 
         if ($stmt->execute()) {
             return 'Success';
@@ -120,6 +123,7 @@ class User {
             $this->foto_perfil = $foto_perfil;
         }
     }
+
     // Métodos para obter informações do usuário
     public function getId() {
         return $this->id;
@@ -209,89 +213,88 @@ class User {
         return $stmt->execute();
     }
 
-        // Método para alterar a foto de perfil
-        public function alterarFotoPerfil($id_usuario, $caminhoFoto) {
-            $sql = "UPDATE usuario SET foto_perfil = ? WHERE id = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('si', $caminhoFoto, $id_usuario);
-            return $stmt->execute();
+    // Método para alterar a foto de perfil
+    public function alterarFotoPerfil($id_usuario, $caminhoFoto) {
+        $sql = "UPDATE usuario SET foto_perfil = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('si', $caminhoFoto, $id_usuario);
+        return $stmt->execute();
+    }
+
+    // Método para trocar senha
+    public function trocarSenha($id_usuario, $senhaAtual, $novaSenha) {
+        // Verificar se a senha atual está correta
+        $sql = "SELECT senha FROM usuario WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($senhaCriptografada);
+        $stmt->fetch();
+
+        // Descriptografar a senha atual
+        $senhaAtualDescriptografada = openssl_decrypt($senhaCriptografada, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
+
+        if ($senhaAtual !== $senhaAtualDescriptografada) {
+            return false;
         }
 
-        // Método para trocar senha
-        public function trocarSenha($id_usuario, $senhaAtual, $novaSenha) {
-            // Verificar se a senha atual está correta
-            $sql = "SELECT senha FROM usuario WHERE id = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('i', $id_usuario);
-            $stmt->execute();
-            $stmt->store_result();
-            $stmt->bind_result($senhaCriptografada);
-            $stmt->fetch();
-        
-            // Descriptografar a senha atual
-            $senhaAtualDescriptografada = openssl_decrypt($senhaCriptografada, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-        
-            if ($senhaAtual !== $senhaAtualDescriptografada) {
-                return false;
-            }
-        
-            // Criptografar a nova senha
-            $novaSenhaCriptografada = openssl_encrypt($novaSenha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
-        
-            // Atualizar a senha
-            $sql = "UPDATE usuario SET senha = ? WHERE id = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('si', $novaSenhaCriptografada, $id_usuario);
-            return $stmt->execute();
-        }
-        
-    
-        // Método para obter a foto de perfil
-        public function getFotoPerfil() {
-            return $this->foto_perfil;
-        }
+        // Criptografar a nova senha
+        $novaSenhaCriptografada = openssl_encrypt($novaSenha, 'aes-256-cbc', $this->chave, 0, str_repeat('0', 16));
 
-        public function desativarConta($id_usuario) {
-            // Excluir registros dependentes
-            $sql = "DELETE FROM lista_livros WHERE id_usuario = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('i', $id_usuario);
-            $stmt->execute();
-    
-            $sql = "DELETE FROM posts WHERE id_usuario = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('i', $id_usuario);
-            $stmt->execute();
-    
-            $sql = "DELETE FROM comentarios WHERE id_usuario = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('i', $id_usuario);
-            $stmt->execute();
-    
-            $sql = "DELETE FROM curtidas WHERE id_usuario = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('i', $id_usuario);
-            $stmt->execute();
-    
-            $sql = "DELETE FROM posts_salvos WHERE id_usuario = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('i', $id_usuario);
-            $stmt->execute();
-    
-            $sql = "DELETE FROM notificacoes WHERE id_usuario = ? OR id_usuario_emissor = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('ii', $id_usuario, $id_usuario);
-            $stmt->execute();
-    
-            $sql = "DELETE FROM trocas WHERE id_usuario_solicitante = ? OR id_usuario_dono = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('ii', $id_usuario, $id_usuario);
-            $stmt->execute();
-    
-            // Excluir o usuário
-            $sql = "DELETE FROM usuario WHERE id = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param('i', $id_usuario);
-            return $stmt->execute();
-        }
+        // Atualizar a senha
+        $sql = "UPDATE usuario SET senha = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('si', $novaSenhaCriptografada, $id_usuario);
+        return $stmt->execute();
+    }
+
+    // Método para obter a foto de perfil
+    public function getFotoPerfil() {
+        return $this->foto_perfil;
+    }
+
+    public function desativarConta($id_usuario) {
+        // Excluir registros dependentes
+        $sql = "DELETE FROM lista_livros WHERE id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+
+        $sql = "DELETE FROM posts WHERE id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+
+        $sql = "DELETE FROM comentarios WHERE id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+
+        $sql = "DELETE FROM curtidas WHERE id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+
+        $sql = "DELETE FROM posts_salvos WHERE id_usuario = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+
+        $sql = "DELETE FROM notificacoes WHERE id_usuario = ? OR id_usuario_emissor = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('ii', $id_usuario, $id_usuario);
+        $stmt->execute();
+
+        $sql = "DELETE FROM trocas WHERE id_usuario_solicitante = ? OR id_usuario_dono = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('ii', $id_usuario, $id_usuario);
+        $stmt->execute();
+
+        // Excluir o usuário
+        $sql = "DELETE FROM usuario WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        return $stmt->execute();
+    }
 }

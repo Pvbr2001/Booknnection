@@ -103,6 +103,7 @@ CREATE TABLE trocas (
     id_post INT NOT NULL,
     id_usuario_solicitante INT NOT NULL,
     id_usuario_dono INT NOT NULL,
+    id_livro_solicitante INT NULL;
     status ENUM('pendente', 'confirmada', 'finalizada') DEFAULT 'pendente';
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_post) REFERENCES posts(id) ON DELETE CASCADE,
