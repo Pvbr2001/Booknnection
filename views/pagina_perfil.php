@@ -154,16 +154,22 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
             <div id="feed" class="feed">
                 <?php foreach ($postsDoUsuario as $post): ?>
                     <?php
-                        // Contar o número de curtidas para cada post
-                        $sqlCurtidas = "SELECT COUNT(*) as totalCurtidas FROM curtidas WHERE id_post = ?";
-                        $stmtCurtidas = $conn->prepare($sqlCurtidas);
-                        $stmtCurtidas->bind_param("i", $post['id']);
-                        $stmtCurtidas->execute();
-                        $resultCurtidas = $stmtCurtidas->get_result();
-                        $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
-                    ?>
+                    // Contar o número de curtidas para cada post
+                    $sqlCurtidas = "SELECT COUNT(*) as totalCurtidas FROM curtidas WHERE id_post = ?";
+                    $stmtCurtidas = $conn->prepare($sqlCurtidas);
+                    $stmtCurtidas->bind_param("i", $post['id']);
+                    $stmtCurtidas->execute();
+                    $resultCurtidas = $stmtCurtidas->get_result();
+                    $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
 
+                    // Obter a foto de perfil do dono do post
+                    $fotoPerfil = $user->getFotoPerfilById($post['id_usuario']);
+                    ?>
                     <div class="card mb-4">
+                        <div class="post-owner-info">
+                            <img src="<?= $fotoPerfil ? htmlspecialchars($fotoPerfil) : '../public/imagens/user-icon.png'; ?>" alt="Foto do Dono do Post">
+                            <h1><?= htmlspecialchars($post['nome']); ?></h1>
+                        </div>
                         <img class="card-img-top" src="<?= htmlspecialchars($post['caminho_capa']); ?>" alt="Capa do Livro" style="width: auto; height: 500px; object-fit: cover; margin: 0 auto;">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($post['titulo']); ?></h5>
@@ -185,7 +191,7 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
                             </div>
                         </div>
                         <div class="card-footer text-muted">
-                            Postado por <a href="#">Usuário</a> no dia <?= date('d/m/Y', strtotime($post['data_post'])); ?>
+                            Postado por <a href="#"><?= htmlspecialchars($post['nome']); ?></a> no dia <?= date('d/m/Y', strtotime($post['data_post'])); ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -211,7 +217,23 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
             <!-- Seção de posts salvos -->
             <div id="saved-posts" class="feed" style="display:none;">
                 <?php foreach ($postsSalvos as $post): ?>
+                    <?php
+                    // Contar o número de curtidas para cada post
+                    $sqlCurtidas = "SELECT COUNT(*) as totalCurtidas FROM curtidas WHERE id_post = ?";
+                    $stmtCurtidas = $conn->prepare($sqlCurtidas);
+                    $stmtCurtidas->bind_param("i", $post['id']);
+                    $stmtCurtidas->execute();
+                    $resultCurtidas = $stmtCurtidas->get_result();
+                    $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
+
+                    // Obter a foto de perfil do dono do post
+                    $fotoPerfil = $user->getFotoPerfilById($post['id_usuario']);
+                    ?>
                     <div class="card mb-4">
+                        <div class="post-owner-info">
+                            <img src="<?= $fotoPerfil ? htmlspecialchars($fotoPerfil) : '../public/imagens/user-icon.png'; ?>" alt="Foto do Dono do Post">
+                            <h1><?= htmlspecialchars($post['nome']); ?></h1>
+                        </div>
                         <img class="card-img-top" src="<?= htmlspecialchars($post['caminho_capa']); ?>" alt="Capa do Livro" style="width: auto; height: 500px; object-fit: cover; margin: 0 auto;">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($post['titulo']); ?></h5>
@@ -221,7 +243,7 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
                                 <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
                                     <input type="hidden" name="acao" value="curtir_post">
                                     <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
-                                    <button class="btn btn-primary" type="submit">Curtir (<?= $post['curtidas']; ?>)</button>
+                                    <button class="btn btn-primary" type="submit">Curtir (<?= $curtidas; ?>)</button>
                                 </form>
 
                                 <!-- Save post button -->
@@ -233,7 +255,7 @@ $postsDoUsuario = $post->exibirPostsDoUsuario($_SESSION['user_id']);
                             </div>
                         </div>
                         <div class="card-footer text-muted">
-                            Postado por <a href="#">Usuário</a> no dia <?= date('d/m/Y', strtotime($post['data_post'])); ?>
+                            Postado por <a href="#"><?= htmlspecialchars($post['nome']); ?></a> no dia <?= date('d/m/Y', strtotime($post['data_post'])); ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

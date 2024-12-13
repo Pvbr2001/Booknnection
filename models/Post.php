@@ -92,10 +92,11 @@ class Post {
 
     // Function to display saved posts of the user
     public function exibirPostsSalvos($id_usuario) {
-        $sql = "SELECT p.id, p.titulo, p.descricao, l.caminho_capa
+        $sql = "SELECT p.id, p.titulo, p.descricao, l.caminho_capa, p.id_usuario, u.nome
                 FROM posts_salvos ps
                 JOIN posts p ON ps.id_post = p.id
                 JOIN livros l ON p.id_livro = l.id
+                JOIN usuario u ON p.id_usuario = u.id
                 WHERE ps.id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('i', $id_usuario);
@@ -111,9 +112,10 @@ class Post {
 
     // Function to display all posts created by the user
     public function exibirPostsDoUsuario($id_usuario) {
-        $sql = "SELECT p.id, p.titulo, p.descricao, l.caminho_capa
+        $sql = "SELECT p.id, p.titulo, p.descricao, l.caminho_capa, p.id_usuario, u.nome
                 FROM posts p
                 JOIN livros l ON p.id_livro = l.id
+                JOIN usuario u ON p.id_usuario = u.id
                 WHERE p.id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('i', $id_usuario);
@@ -153,7 +155,7 @@ class Post {
         $stmt->bind_param("i", $id_post);
         $stmt->execute();
         $result = $stmt->get_result();
-        $nome = $result->fetch_assoc()['nome'];
+        $nome = $result->fetch_assoc()['nome'] ?? null;
         return $nome;
     }
 
@@ -163,8 +165,7 @@ class Post {
         $stmt->bind_param("i", $id_post);
         $stmt->execute();
         $result = $stmt->get_result();
-        $titulo = $result->fetch_assoc()['titulo'];
+        $titulo = $result->fetch_assoc()['titulo'] ?? null;
         return $titulo;
     }
-
 }

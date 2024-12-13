@@ -297,4 +297,20 @@ class User {
         $stmt->bind_param('i', $id_usuario);
         return $stmt->execute();
     }
+
+    // Função para obter a foto do usuário pelo ID
+    public function getFotoPerfilById($id_usuario) {
+        $sql = "SELECT foto_perfil FROM usuario WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['foto_perfil'];
+        }
+
+        return null;
+    }
 }

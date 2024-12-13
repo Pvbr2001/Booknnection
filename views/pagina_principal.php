@@ -106,11 +106,18 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                     $stmtCurtidas->execute();
                                     $resultCurtidas = $stmtCurtidas->get_result();
                                     $curtidas = $resultCurtidas->fetch_assoc()['totalCurtidas'];
+
+                                    // Obter a foto de perfil do dono do post
+                                    $fotoPerfil = $user->getFotoPerfilById($post['id_usuario']);
                                     ?>
                                     <div class="card mb-4">
+                                        <div class="post-owner-info">
+                                            <img src="<?= $fotoPerfil ? htmlspecialchars($fotoPerfil) : '../public/imagens/user-icon.png'; ?>" alt="Foto do Dono do Post">
+                                            <h1><?= htmlspecialchars($post['nome']); ?></h1>
+                                        </div>
                                         <img class="card-img-top" src="<?= htmlspecialchars($post['caminho_capa']); ?>" alt="Capa do Livro" style="width: auto; height: 500px; object-fit: cover; margin: 0 auto;">
                                         <div class="card-body">
-                                            <h5 class="card-title"><?= htmlspecialchars($post['titulo']); ?></h5>
+                                            <h5 class="card-title"><?= htmlspecialchars($post['post_titulo']); ?></h5>
                                             <p class="card-text"><?= htmlspecialchars($post['descricao']); ?></p>
                                             <div class="d-flex gap-2">
                                                 <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
@@ -120,13 +127,9 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                                         <i class="material-icons">thumb_up</i> Curtir (<?= $curtidas; ?>)
                                                     </button>
                                                 </form>
-                                                <form action="../controllers/post_actions.php" method="POST" style="display:inline;" id="send-request-form">
-                                                    <input type="hidden" name="acao" value="trocar_livro">
-                                                    <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
-                                                    <button type="button" id="send-request-btn" class="btn btn-secondary ml-2 send-request-btn" data-image="<?= htmlspecialchars($post['caminho_capa']); ?>">
-                                                        <i class="material-icons">swap_horiz</i> Enviar Solicitação
-                                                    </button>
-                                                </form>
+                                                <button type="button" id="send-request-btn" class="btn btn-secondary ml-2 send-request-btn" data-image="<?= htmlspecialchars($post['caminho_capa']); ?>" data-id="<?= $post['id']; ?>" data-nome="<?= htmlspecialchars($post['nome']); ?>" data-owner-id="<?= $post['id_usuario']; ?>">
+                                                    <i class="material-icons">swap_horiz</i> Enviar Solicitação
+                                                </button>
                                                 <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
                                                     <input type="hidden" name="acao" value="salvar_post">
                                                     <input type="hidden" name="id_post" value="<?= $post['id']; ?>">
@@ -143,7 +146,7 @@ $posts = $post->exibirPostsPorCidade($cidade);
                                             </div>
                                         </div>
                                         <div class="card-footer text-muted">
-                                            Postado por <a href="#">Usuário</a> no dia <?= date('d/m/Y', strtotime($post['data_post'])); ?>
+                                            Postado por <a href="#"><?= htmlspecialchars($post['nome']); ?></a> no dia <?= date('d/m/Y', strtotime($post['data_post'])); ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -189,13 +192,16 @@ $posts = $post->exibirPostsPorCidade($cidade);
                             <div class="popup-content">
                                 <span id="close-send-request-popup" class="popup-close">&times;</span>
                                 <h2>Enviar Solicitação</h2>
+                                <div class="post-owner-info-popup">
+                                    <img src="../public/imagens/user-icon.png" alt="Foto do Dono do Post" id="post-owner-image">
+                                    <h1 id="post-owner-name"></h1>
+                                </div>
                                 <form id="send-request-form" action="../controllers/post_actions.php" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="acao" value="trocar_livro">
                                     <input type="hidden" name="id_post" id="id_post" value="">
                                     <div class="post-info">
                                         <img src="" alt="Capa do Livro" id="imagem_post" style="width: auto; height: 300px;">
                                         <h1>Usuário atual: <span id="current-user"><?php echo $user->getNome(); ?></span> </h1>
-                                        <h1>Dono do post: <span id="post-owner"><?php echo $post['nome']; ?></span> </h1>
                                     </div>
                                     <button type="submit" class="green-button">Confirmar</button>
                                 </form>
@@ -318,5 +324,39 @@ $posts = $post->exibirPostsPorCidade($cidade);
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            $('.send-request-btn').click(function() {
+                var image = $(this).data('image');
+                var id_post = $(this).data('id');
+                var nome_dono_post = $(this).data('nome');
+                var postOwnerId = $(this).data('owner-id');
+
+                $('#imagem_post').attr('src', image);
+                $('#id_post').val(id_post);
+                $('#post-owner-name').text(nome_dono_post);
+
+                // Buscar a foto do usuário dono do post
+                fetch(`../controllers/user_controller.php?acao=getFotoPerfilById&id_usuario=${postOwnerId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.foto_perfil) {
+                            $('#post-owner-image').attr('src', data.foto_perfil);
+                        } else {
+                            $('#post-owner-image').attr('src', '../public/imagens/user-icon.png'); // Imagem padrão
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                    });
+
+                $('#send-request-popup').addClass('open-popup');
+            });
+
+            $('#close-send-request-popup').click(function() {
+                $('#send-request-popup').removeClass('open-popup');
+            });
+        });
+    </script>
 </body>
 </html>

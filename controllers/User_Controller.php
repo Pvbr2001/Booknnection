@@ -22,6 +22,16 @@ if (isset($_GET['acao'])) {
             header('Location: ../views/pagina_login.php');
         }
         exit();
+    } elseif ($_GET['acao'] === 'getFotoPerfilById') {
+        // Verifica se o ID do usuário está definido
+        if (isset($_GET['id_usuario'])) {
+            $user = new User();
+            $fotoPerfil = $user->getFotoPerfilById($_GET['id_usuario']);
+            echo json_encode(['foto_perfil' => $fotoPerfil]);
+        } else {
+            echo json_encode(['foto_perfil' => null]);
+        }
+        exit();
     }
 }
 

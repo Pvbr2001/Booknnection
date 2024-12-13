@@ -38,7 +38,7 @@ $stmt_check_owner = $conn->prepare($sql_check_owner);
 $stmt_check_owner->bind_param("i", $id_post);
 $stmt_check_owner->execute();
 $result_check_owner = $stmt_check_owner->get_result();
-$post_owner_id = $result_check_owner->fetch_assoc()['id_usuario'];
+$post_owner_id = $result_check_owner->fetch_assoc()['id_usuario'] ?? null;
 
 $is_owner = ($_SESSION['user_id'] == $post_owner_id);
 
@@ -107,25 +107,25 @@ $total_confirmacoes = $result_check_confirmacoes->fetch_assoc()['total'];
             </a>
         </div>
         <div class="card mb-4">
-            <img class="card-img-top" src="<?= htmlspecialchars($post_info['caminho_capa']); ?>" alt="Capa do Livro" style="width: auto; height: 500px; object-fit: cover; margin: 0 auto;">
+            <img class="card-img-top" src="<?= $post_info ? htmlspecialchars($post_info['caminho_capa']) : '../public/imagens/erro.png'; ?>" alt="Capa do Livro" style="width: auto; height: 500px; object-fit: cover; margin: 0 auto;">
             <div class="card-body">
-                <h5 class="card-title"><?= htmlspecialchars($post_info['titulo']); ?></h5>
-                <p class="card-text"><?= htmlspecialchars($post_info['descricao']); ?></p>
+                <h5 class="card-title"><?= $post_info ? htmlspecialchars($post_info['titulo']) : 'Post não encontrado'; ?></h5>
+                <p class="card-text"><?= $post_info ? htmlspecialchars($post_info['descricao']) : 'Descrição não disponível'; ?></p>
                 <div class="d-flex gap-2">
                     <form action="../controllers/post_actions.php" method="POST" style="display:inline;">
                         <input type="hidden" name="acao" value="confirmar_troca">
-                        <input type="hidden" name="id_post" value="<?= $post_info['id']; ?>">
-                        <button class="btn btn-success" type="submit">
+                        <input type="hidden" name="id_post" value="<?= $id_post; ?>">
+                        <button class="btn btn-success" type="submit" <?= $post_info ? '' : 'disabled'; ?>>
                             <i class="material-icons">check</i> Confirmar Troca
                         </button>
                     </form>
-                    <a href="https://wa.me/<?= $emissor_info['telefone_emissor']; ?>" class="btn btn-primary ml-2">
+                    <a href="https://wa.me/<?= $emissor_info ? htmlspecialchars($emissor_info['telefone_emissor']) : '#'; ?>" class="btn btn-primary ml-2" <?= $post_info ? '' : 'disabled'; ?>>
                         <i class="material-icons">whatsapp</i> Entrar em Contato
                     </a>
                 </div>
             </div>
             <div class="card-footer text-muted">
-                Postado por <a href="#"><?= htmlspecialchars($post_owner); ?></a> no dia <?= date('d/m/Y', strtotime($post_info['data_post'])); ?>
+                Postado por <a href="#"><?= $post_owner ? htmlspecialchars($post_owner) : 'Usuário não encontrado'; ?></a> no dia <?= $post_info ? date('d/m/Y', strtotime($post_info['data_post'])) : 'Data não disponível'; ?>
             </div>
         </div>
         <?php if (!$is_owner && $troca_status !== 'finalizada'): ?>
@@ -136,16 +136,16 @@ $total_confirmacoes = $result_check_confirmacoes->fetch_assoc()['total'];
                 <div class="card-body">
                     <form action="../controllers/post_actions.php" method="POST">
                         <input type="hidden" name="acao" value="selecionar_livro_troca">
-                        <input type="hidden" name="id_post" value="<?= $post_info['id']; ?>">
+                        <input type="hidden" name="id_post" value="<?= $id_post; ?>">
                         <div class="form-group">
                             <label for="livro_troca">Livro para troca</label>
-                            <select class="form-control" id="livro_troca" name="livro_troca">
+                            <select class="form-control" id="livro_troca" name="livro_troca" <?= $post_info ? '' : 'disabled'; ?>>
                                 <?php foreach ($livros_usuario as $livro): ?>
                                     <option value="<?= $livro['id']; ?>"><?= htmlspecialchars($livro['titulo']); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Selecionar Livro</button>
+                        <button type="submit" class="btn btn-primary" <?= $post_info ? '' : 'disabled'; ?>>Selecionar Livro</button>
                     </form>
                 </div>
             </div>
