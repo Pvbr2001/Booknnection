@@ -33,18 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($acao === 'trocar_livro') {
         $id_post = $_POST['id_post'];
         $id_usuario_atual = $_SESSION['user_id'];
-        $livros_troca = $_POST['livros_troca'];
-    
+
         // Verificar se o ID do post e o ID do usuário atual são válidos
-        if (empty($id_post) || empty($id_usuario_atual) || empty($livros_troca)) {
+        if (empty($id_post) || empty($id_usuario_atual)) {
             echo json_encode(['status' => 'error', 'message' => 'Erro: Dados inválidos.']);
             exit;
         }
-    
+
         // Obter a instância da conexão com o banco de dados
         $database = Database::getInstance();
         $conn = $database->getConnection();
-    
+
         // Buscar o ID do dono do post (usuário 2)
         $sql_dono_post = "SELECT id_usuario FROM posts WHERE id = ?";
         $stmt = $conn->prepare($sql_dono_post);
@@ -53,31 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
         $post_dono = $result->fetch_assoc();
         $id_usuario_dono = $post_dono['id_usuario'];  // Dono do post (usuário 2)
-    
+
         // Inserir a notificação para o dono do post (usuário 2)
         $sql = "INSERT INTO notificacoes (id_usuario, id_usuario_emissor, tipo, id_post) VALUES (?, ?, 'troca', ?)";
         $stmt = $conn->prepare($sql);
-    
+
         if ($stmt) {
             $stmt->bind_param("iii", $id_usuario_dono, $id_usuario_atual, $id_post); // Passando o id do emissor
             if ($stmt->execute()) {
-                // Inserir a troca na tabela trocas
-                $sql_insert_troca = "INSERT INTO trocas (id_post, id_usuario_solicitante, id_usuario_dono, status) VALUES (?, ?, ?, 'pendente')";
-                $stmt = $conn->prepare($sql_insert_troca);
-                $stmt->bind_param("iii", $id_post, $id_usuario_atual, $id_usuario_dono);
-                if ($stmt->execute()) {
-                    // Inserir os livros selecionados na tabela trocas_livros
-                    $id_troca = $stmt->insert_id;
-                    foreach ($livros_troca as $livro_id) {
-                        $sql_insert_livro_troca = "INSERT INTO trocas_livros (id_troca, id_livro) VALUES (?, ?)";
-                        $stmt = $conn->prepare($sql_insert_livro_troca);
-                        $stmt->bind_param("ii", $id_troca, $livro_id);
-                        $stmt->execute();
-                    }
-                    echo json_encode(['status' => 'success', 'message' => 'Notificação enviada com sucesso para o dono do post!']);
-                } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Erro ao inserir troca: ' . $stmt->error]);
-                }
+                echo json_encode(['status' => 'success', 'message' => 'Notificação enviada com sucesso para o dono do post!']);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Erro ao enviar notificação: ' . $stmt->error]);
             }
@@ -85,10 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Erro ao preparar a consulta: ' . $conn->error]);
         }
-    
+
         $conn->close();
-    }
-     elseif ($acao === 'adicionar_comentario') {
+    } elseif ($acao === 'adicionar_comentario') {
         $id_post = $_POST['id_post'];
         $id_usuario = $_SESSION['user_id'];
         $comentario = $_POST['comentario'];
