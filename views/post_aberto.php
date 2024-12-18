@@ -75,7 +75,7 @@ $comentarios = $resultComentarios->fetch_all(MYSQLI_ASSOC);
                         <a class="nav-link" href="pagina_perfil.php">Perfil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Manual</a>
+                        <a class="nav-link" href="manual.html" target="_blank">Manual</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="pagina_home.html">Home</a>
@@ -157,10 +157,6 @@ $comentarios = $resultComentarios->fetch_all(MYSQLI_ASSOC);
             </div>
         </div>
     </div>
-
-    <footer class="footer">
-        <p>Desenvolvido Para TCC Senai</p>
-    </footer>
 
     <!-- Incluir jQuery completo -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"

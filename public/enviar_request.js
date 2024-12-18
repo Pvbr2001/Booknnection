@@ -1,66 +1,55 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const sendRequestButtons = document.querySelectorAll('.send-request-btn');
-    const sendRequestPopup = document.getElementById('send-request-popup');
-    const closeSendRequestPopup = document.getElementById('close-send-request-popup');
-    const sendRequestForm = document.getElementById('send-request-form');
-    const imagemPost = document.getElementById('imagem_post');
-    const idPostInput = document.getElementById('id_post');
-    const currentUser = document.getElementById('current-user');
-    const postOwnerName = document.getElementById('post-owner-name');
-    const postOwnerImage = document.getElementById('post-owner-image');
+$(document).ready(function () {
+    $('.send-request-btn').click(function () {
+        var image = $(this).data('image');
+        var id_post = $(this).data('id');
+        var nome_dono_post = $(this).data('nome');
+        var postOwnerId = $(this).data('owner-id');
 
-    sendRequestButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const imageSrc = button.getAttribute('data-image');
-            const postId = button.getAttribute('data-id');
-            const postOwner = button.getAttribute('data-nome');
-            const postOwnerId = button.getAttribute('data-owner-id');
+        $('#imagem_post').attr('src', image);
+        $('#id_post').val(id_post);
+        $('#post-owner-name').text(nome_dono_post);
 
-            imagemPost.src = imageSrc;
-            idPostInput.value = postId;
-            postOwnerName.textContent = postOwner;
+        // Buscar a foto do usuário dono do post
+        fetch(`../controllers/user_controller.php?acao=getFotoPerfilById&id_usuario=${postOwnerId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.foto_perfil) {
+                    $('#post-owner-image').attr('src', data.foto_perfil);
+                } else {
+                    $('#post-owner-image').attr('src', '../public/imagens/user-icon.png'); // Imagem padrão
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
 
-            // Buscar a foto do usuário dono do post
-            fetch(`../controllers/user_controller.php?acao=getFotoPerfilById&id_usuario=${postOwnerId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.foto_perfil) {
-                        postOwnerImage.src = data.foto_perfil;
-                    } else {
-                        postOwnerImage.src = '../public/imagens/user-icon.png'; // Imagem padrão
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                });
-
-            sendRequestPopup.classList.add('open-popup');
-        });
+        $('#send-request-popup').addClass('open-popup');
     });
 
-    closeSendRequestPopup.addEventListener('click', function() {
-        sendRequestPopup.classList.remove('open-popup');
+    $('#close-send-request-popup').click(function () {
+        $('#send-request-popup').removeClass('open-popup');
     });
 
-    sendRequestForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+    $('#send-request-form').submit(function (e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
 
-        const formData = new FormData(sendRequestForm);
-        fetch('../controllers/post_actions.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert(data.message);
-                sendRequestPopup.classList.remove('open-popup');
-            } else {
-                alert(data.message);
+        $.ajax({
+            type: 'POST',
+            url: '../controllers/post_actions.php',
+            data: formData,
+            success: function (response) {
+                var data = JSON.parse(response);
+                if (data.status === 'success') {
+                    alert(data.message);
+                    $('#send-request-popup').removeClass('open-popup');
+                } else {
+                    alert(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
             }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
         });
     });
 });
