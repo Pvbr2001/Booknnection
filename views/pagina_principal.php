@@ -314,7 +314,9 @@ $posts = $post->exibirPostsPorCidade($cidade);
             </form>
         </div>
     </div>
-
+    <footer class="footer">
+        <p>Desenvolvido Para TCC Senai</p>
+    </footer>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../public/adicionar_livro.js"></script>
     <script src="../public/enviar_request.js"></script>

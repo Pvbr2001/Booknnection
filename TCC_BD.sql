@@ -103,8 +103,8 @@ CREATE TABLE trocas (
     id_post INT NOT NULL,
     id_usuario_solicitante INT NOT NULL,
     id_usuario_dono INT NOT NULL,
-    id_livro_solicitante INT NULL,
-    status ENUM('pendente', 'confirmada', 'finalizada') DEFAULT 'pendente',
+    id_livro_solicitante INT NULL;
+    status ENUM('pendente', 'confirmada', 'finalizada') DEFAULT 'pendente';
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_post) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario_solicitante) REFERENCES usuario(id) ON DELETE CASCADE,
@@ -158,3 +158,6 @@ JOIN
 JOIN
     livros l ON p.id_livro = l.id;
 
+-- Alterar o usuário root
+ALTER USER 'root'@'localhost' IDENTIFIED BY '81631240';
+FLUSH PRIVILEGES; 

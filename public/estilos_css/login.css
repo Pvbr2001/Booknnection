@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #ffffff;
+    background-color: #ffffff; /* Tom de cinza azulado */
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -33,9 +33,9 @@ body {
     text-align: center;
     transform: translate(-50%, -50%);
     transition: transform 300ms, box-shadow 300ms;
-    box-shadow: 5px 10px 10px rgba(64, 78, 80, 0.2);
+    box-shadow: 5px 10px 10px rgba(2, 128, 144, 0.2);
     overflow: hidden;
-    z-index: 1; 
+    z-index: 1; /* Ajuste de z-index para garantir a visibilidade correta */
 }
 
 .form-container::before, .form-container::after {
